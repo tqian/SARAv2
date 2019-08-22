@@ -1,6 +1,9 @@
+import { Injectable } from '@angular/core';
+
 import { BlobService, UploadConfig, UploadParams } from 'angular-azure-blob-service'
 import { environment } from '../../environments/environment';
 import { StoreBaseService } from './storage-base.service';
+
 
 //angular-azure-blob-service
 const Config: UploadParams = {
@@ -8,6 +11,11 @@ const Config: UploadParams = {
   storageAccount:  environment.azureConfig.storageAccount,
   containerName:  environment.azureConfig.containerName
 };
+
+@Injectable({
+  providedIn: 'root'
+})
+
 
 export class AzureService extends StoreBaseService{
   currentFile: File;

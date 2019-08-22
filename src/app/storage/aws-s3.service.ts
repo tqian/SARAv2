@@ -1,8 +1,12 @@
+import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 import * as AWS from 'aws-sdk';
 import { StoreBaseService } from './storage-base.service';
 
+@Injectable({
+  providedIn: 'root'
+})
 
 export class AwsS3Service extends StoreBaseService{
   currentFile: File;
