@@ -1,26 +1,24 @@
-import { Injectable } from '@angular/core';
 import { BlobService, UploadConfig, UploadParams } from 'angular-azure-blob-service'
+import { environment } from '../../environments/environment';
+import { StoreBaseService } from './storage-base.service';
 
 //angular-azure-blob-service
 const Config: UploadParams = {
-  sas: '?sv=2018-03-28&ss=b&srt=sco&sp=rwl&st=2019-06-27T18%3A15%3A56Z&se=2020-06-28T18%3A15%3A00Z&sig=vccYOEN3SG%2BErA4%2FzmDNn0w4qOn%2FT4tB8jGnEIJoXh4%3D',
-  storageAccount: 'securebloblyh',
-  containerName: 'mycontainer'
+  sas: environment.azureConfig.sas,
+  storageAccount:  environment.azureConfig.storageAccount,
+  containerName:  environment.azureConfig.containerName
 };
 
-@Injectable({
-  providedIn: 'root'
-})
-
-
-export class AzureService {
+export class AzureService extends StoreBaseService{
   currentFile: File;
   config: UploadConfig;
   private percent: number;
 
   constructor(    
     private blobsvc: BlobService
-  ) { }
+  ) { 
+    super();
+  }
 
   upload (result) {
     //var fileDir = cordova.file.externalDataDirectory; 

@@ -1,19 +1,16 @@
-import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 import * as AWS from 'aws-sdk';
+import { StoreBaseService } from './storage-base.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AwsS3Service {
+
+export class AwsS3Service extends StoreBaseService{
   currentFile: File;
 
-  constructor() { }
-
   upload(result){
-    var bucketName = 'sara-testv';
-    var bucketRegion = 'us-east-2';
-    var IdentityPoolId = 'us-east-2:c9617754-1d3e-4058-bfa4-d54230cb72cf';
+    var bucketName =  environment.awsConfig.bucketName;
+    var bucketRegion = environment.awsConfig.bucketRegion;
+    var IdentityPoolId = environment.awsConfig.IdentityPoolId;
     
     AWS.config.update({
       region: bucketRegion,

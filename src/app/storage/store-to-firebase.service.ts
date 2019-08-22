@@ -1,16 +1,12 @@
-import { Injectable } from '@angular/core';
-
 import { AngularFirestore } from '@angular/fire/firestore';
+import { StoreBaseService } from './storage-base.service';
 
-
-@Injectable({
-  providedIn: 'root',
-})
-export class StoreToFirebaseService {
+export class StoreToFirebaseService extends StoreBaseService{
 
   constructor(
     private afs: AngularFirestore
   ) { 
+    super();
   }
 
   /*initFirebase(){
