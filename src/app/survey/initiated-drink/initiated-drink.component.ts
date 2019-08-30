@@ -65,14 +65,14 @@ export class InitiatedDrinkComponent implements OnInit {
     //this.storeToFirebaseService.initFirebase();
     //this.storeToFirebaseService.storeTofirebase(surveyResult);
 
-    //this.storeToFirebaseService.addSurvey('/results',this.question.getData());
+    this.storeToFirebaseService.uploadSurveyResult('/results',this.question.getData());
     
     //save to Amazon AWS S3
-    this.awsS3Service.upload(this.question.getData());
+    this.awsS3Service.uploadSurveyResult(this.question.getData());
     console.log("End of storeData");
 
     //save to azure 
-    this.azureService.upload(this.question.getData());
+    this.azureService.uploadSurveyResult(this.question.getData());
 
     //this.saveDataService.browseToReward('/incentive/award');
     this.saveDataService.browseToReward('incentive/visualization');

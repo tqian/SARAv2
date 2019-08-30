@@ -3,6 +3,10 @@ import { environment } from '../../environments/environment';
 
 import * as AWS from 'aws-sdk';
 import { StoreBaseService } from './storage-base.service';
+import { EncrDecrService } from '../storage/encrdecrservice.service';
+import { NetworkService, ConnectionStatus } from './network.service';
+import { Storage } from '@ionic/storage';
+import { ToastController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +14,16 @@ import { StoreBaseService } from './storage-base.service';
 
 export class AwsS3Service extends StoreBaseService{
   currentFile: File;
-
-  upload(result){
+  constructor(    
+    encrDecr: EncrDecrService,
+    storage: Storage,
+    networkSvc: NetworkService,
+    toastController: ToastController
+  ) { 
+    super(encrDecr, storage, networkSvc, toastController );
+  }
+  
+  upload(result, current){
     var bucketName =  environment.awsConfig.bucketName;
     var bucketRegion = environment.awsConfig.bucketRegion;
     var IdentityPoolId = environment.awsConfig.IdentityPoolId;
@@ -28,7 +40,7 @@ export class AwsS3Service extends StoreBaseService{
       params: {Bucket: bucketName}
     });  
     
-    this.currentFile = new File([JSON.stringify(result)], "result.json", {type: "text/plain"});
+    this.currentFile = new File([JSON.stringify(this.encrypt(result))], "result.json", {type: "text/plain"});
 
     s3.upload({
       Bucket: bucketName,
@@ -38,10 +50,39 @@ export class AwsS3Service extends StoreBaseService{
     }, function(err, data) {
       if (err) {
         //return alert('There was an error uploading your photo: '+err.message);
-        console.log('There was an error uploading your photo: '+err.message);
+        alert('There was an error uploading your photo: '+err.message);
+        if(current) {
+          this.storeResultLocally(result);
+        }
+
       }
-      console.log('Successfully uploaded photo.');
+      console.log('Successfully uploaded data.');
     });  
+  }
+
+  uploadSurveyResult(result) {
+    if(this.networkSvc.getCurrentNetworkStatus() == ConnectionStatus.Online){
+        //upload Local Data first
+        this.uploadLocalData();
+        this.clearLocalData();
+        //upload current survey Data
+        this.upload(result, true);
+    } else {
+        this.storeResultLocally(result);
+    }
+      
+  }    
+  
+  //upload local data
+  uploadLocalData() {
+    this.getLocalData().then(storedOperations => {
+      let storedObj = JSON.parse(storedOperations);
+      if (storedObj && storedObj.length > 0) {
+        for (let op of storedObj) {
+          this.upload([op.data], false);
+        }
+      }
+    });   
   }
 
 }

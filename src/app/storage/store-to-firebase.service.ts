@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 
 import { AngularFirestore } from '@angular/fire/firestore';
 import { StoreBaseService } from './storage-base.service';
+import { EncrDecrService } from '../storage/encrdecrservice.service';
+import { NetworkService, ConnectionStatus } from './network.service';
+import { Storage } from '@ionic/storage';
+import { ToastController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +14,13 @@ import { StoreBaseService } from './storage-base.service';
 export class StoreToFirebaseService extends StoreBaseService{
 
   constructor(
+    encrDecr: EncrDecrService,
+    storage: Storage,
+    networkSvc: NetworkService,
+    toastController: ToastController,
     private afs: AngularFirestore
   ) { 
-    super();
+    super(encrDecr, storage, networkSvc, toastController );
   }
 
   /*initFirebase(){
@@ -61,17 +69,46 @@ export class StoreToFirebaseService extends StoreBaseService{
       
   }*/
 
-    addSurvey(path, obj: object){
+    addSurvey(path, obj: object, current){
       console.log("Start to addSurvey!");
       return new Promise<any>((resolve, reject) => {
-        this.afs.collection(path).add(obj)
+        this.afs.collection(path).add(this.encrypt(obj))
         .then(
           (res) => {
             resolve(res)
           },
-          err => reject(err)
+          err => {
+            if(current) {
+              this.storeResultLocally(obj);
+            }    
+            reject(err)
+          }
         )
       }) 
     }    
 
+    uploadSurveyResult(path, obj: object) {
+      if(this.networkSvc.getCurrentNetworkStatus() == ConnectionStatus.Online){
+          //upload Local Data first
+          this.uploadLocalData(path);
+          this.clearLocalData();
+          //upload current survey Data
+          this.addSurvey(path, obj, true);
+      } else {
+          this.storeResultLocally(obj);
+      }
+        
+    }    
+    
+      //upload local data
+      uploadLocalData(path) {
+        this.getLocalData().then(storedOperations => {
+          let storedObj = JSON.parse(storedOperations);
+          if (storedObj && storedObj.length > 0) {
+            for (let op of storedObj) {
+              this.addSurvey(path,[op.data], false);
+            }
+          }
+        });   
+      }    
 }
