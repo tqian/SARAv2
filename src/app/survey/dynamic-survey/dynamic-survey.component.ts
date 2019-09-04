@@ -52,20 +52,18 @@ export class DynamicSurveyComponent implements OnInit {
     }
   ];*/
   survey_string = "";
-  survey_cond = {};
-  survey = {};
   survey_data: any;
- 
-  affect: any;
+  survey: {};
+  surveydependency;
+  namedependency;
+  survey_cond = {};
+  name;
+  affect;
+
   rand_index;
   randomq;
   autocomplete_options;
   choices;
-  name;
-  reponse_ts = {};
-  surveydependency;
-  namedependency;
-
 
   @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
 
@@ -76,7 +74,7 @@ export class DynamicSurveyComponent implements OnInit {
     private EncrDecr: EncrDecrService,
     public plt: Platform) {
       console.log('Reading local json files');
-      fetch('../../../assets/data/data.json').then(async res => {
+      fetch('../../../assets/data/data1.json').then(async res => {
         this.survey_data = await res.json();
         this.init();
       });
@@ -90,33 +88,12 @@ export class DynamicSurveyComponent implements OnInit {
     //TODO: Two-way binding, and call functions. Multiple choice/affect-grid.
     //TODO: Ask Liying to do the JSON.
 
-    const template = '<div class="card"><div class="quetiontextstyle">' +
-      'This is the question' +
-      '</div>' +
-      '<div class="radiovertical">' +
-      '<ul>' +
-      '<li>' +
-      '<input type="radio" id="f-option" name="selector" (click)="modelChanged(0)">' +
-      '<label for="f-option">Pizza</label>' +
-      '<div class="check"></div>' +
-      '</li>' +
-      '<li>' +
-      '<input type="radio" id="s-option" name="selector" (click)="modelChanged(1)">' +
-      '<label for="s-option">Coke</label>' +
-      '<div class="check"></div>' +
-      '</li>' +
-      '</ul>' +
-      '</div></div>';
-
-
-    //const template2 = '<ion-card><ion-card-content>Nine Inch Nails Live</ion-card-content></ion-card>';
-
     //go through the questions, survey_data is an array
 
     this.survey = {};
-    this.reponse_ts = {};
-
+    this.survey_string = "";
     for (let obj of this.survey_data) {
+      this.survey[obj.name] = "";
       this.survey_string = this.process_survey(obj, this.survey_string, obj.name);
       console.log("Done " + this.survey_string);
     }
@@ -126,6 +103,13 @@ export class DynamicSurveyComponent implements OnInit {
     const tmpCmp = Component({ template: this.survey_string })(class implements OnInit{
       
       survey2 = {};
+      affect: any;
+      reponse_ts = {};
+      survey_cond = {};
+      name;
+      surveydependency;
+      namedependency;
+    
       storeToFirebaseService: StoreToFirebaseService;
       EncrDecr: EncrDecrService;
       plt: Platform;
@@ -209,15 +193,16 @@ export class DynamicSurveyComponent implements OnInit {
         }, false);
         
       }
+
       modelChanged(newObj) {
         // do something with new value
         console.log('holla' + newObj);
       }
 
-      inputchanged(questions) {
+      /*inputchanged(questions) {
         //console.log('holla: ' + questions);
         console.log(JSON.stringify(this.survey2));
-      }
+      }*/
 
       storeData(){
         console.log("Inside storeData");
@@ -263,7 +248,7 @@ export class DynamicSurveyComponent implements OnInit {
         console.log('Decrypted :' + decrypted);
         this.survey2['encrypted'] = encrypted;
 
-        this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
+        this.storeToFirebaseService.addSurvey('/results',this.survey2,true);
         
         //save to Amazon AWS S3
         //this.awsS3Service.upload(this.question.getData());
@@ -276,6 +261,103 @@ export class DynamicSurveyComponent implements OnInit {
         //this.saveDataService.browseToReward('incentive/visualization');
       }
 
+    
+      affectclick(index, q, mood) {
+        console.log("" + index + ", " + mood);
+    
+        //
+        //if(index == 1){
+        if (this.affect[index - 1].includes("<u>"))
+          this.affect[index - 1] = this.affect[index - 1].replace('<u><b>', '').replace('</b></u>', '');
+        else
+          this.affect[index - 1] = '<u><b>' + this.affect[index - 1] + '</b></u>';
+        //}
+    
+        for (var i = 0; i < this.affect.length; i++) {
+            if ((i + 1) == index)
+                continue;
+            else {
+                this.affect[i] = this.affect[i].replace('<u><b>', '');
+                this.affect[i] = this.affect[i].replace('</b></u>', '');
+                //console.log($scope.affect);
+            }
+        }
+    
+        this.reponse_ts[q] = {};
+        this.reponse_ts[q].ts = Date.now();
+        this.reponse_ts[q].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
+    
+        this.survey2[q] = mood;
+        //console.log(JSON.stringify(this.survey));
+      }
+  
+     hackQ3d(s,label){
+          //console.log("True " +  ($scope.survey.Q3d==undefined || $scope.survey.Q3d=='0' || $scope.survey.Q3d=='0.5'));
+          this.survey_cond[label+ "Show"] = eval(s);
+           console.log("hackQ3d "+label + "Show "+this.survey_cond[label + "Show"]);
+     }
+  
+     hackQ10d(s,label,questions){
+          //console.log("True " +  ($scope.survey.Q3d==undefined || $scope.survey.Q3d=='0' || $scope.survey.Q3d=='0.5'));
+          var sel = this.survey2[questions];
+          var dep = s ;
+          //console.log("compareSelectionWithDependency "+questions+" "+sel+" "+s);
+          if(sel!=undefined && s!= undefined){
+             sel = sel.replace(/\s+/g, "");
+             dep = s.replace(/\s+/g, "");
+          }
+          this.survey_cond[label + "Show"] = false;
+          if(sel === dep)
+          { 
+            this.survey_cond[label + "Show"]=true;
+          }
+  
+          console.log("hackQ10d "+name+" for "+questions+" "+this.survey_cond[label + "Show"]);
+  
+      }
+
+      inputchanged(questions) {
+        //console.log("Qs:" + questions + ", ts:" + Date.now() + ", readable_time:" + moment().format("MMMM Do YYYY, h:mm:ss a"));
+        console.log('holla: ' + questions+" "+this.survey2["Q18O1"]);
+        console.log(JSON.stringify(this.survey2));
+
+        this.reponse_ts[questions] = {};
+        this.reponse_ts[questions].ts = Date.now();
+        this.reponse_ts[questions].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
+
+        //console.log(JSON.stringify($scope.survey));
+        if(this.name[questions] != null) {
+            for (var j = 0; j < this.name[questions].length; j++){
+                var name= this.name[questions][j];
+                if(this.surveydependency!=undefined && this.surveydependency[name+questions]!=undefined) {
+                    //console.log(JSON.stringify($scope.surveydependency));
+                    this.hackQ3d(this.surveydependency[name+questions],name+questions);
+                }
+    
+                //handle the case when there is empty space in the show array
+                if(this.namedependency!=undefined && this.namedependency[name+questions]!=undefined) {
+                    console.log(JSON.stringify(this.namedependency));
+                    this.hackQ10d(this.namedependency[name+questions],name+questions,questions);
+                }
+            }
+        }
+    }      
+      
+  /*   inputchangedtimepicker(questions) {
+      var x = this.survey2[questions];
+      console.log(this.survey2[questions]);
+      this.survey2[questions] = moment(x).format('h:mm a');
+      this.survey2[questions + "_tz"] = moment(x).format('h:mma Z');
+      this.inputchanged(questions);
+    }
+ */
+      inputchangedtimepicker(pickedTime){
+        console.log(JSON.stringify(this.survey2));
+        //pickedTime = moment(pickedTime).format('h:mm a')
+        console.log(pickedTime);
+       }
+
+
     });
 
     const tmpModule = NgModule({ declarations: [tmpCmp], imports: [FormsModule, BrowserModule], providers: [StoreToFirebaseService], schemas: [CUSTOM_ELEMENTS_SCHEMA]})(class {
@@ -287,6 +369,12 @@ export class DynamicSurveyComponent implements OnInit {
         const cmpRef = this.vc.createComponent(f);
         cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
+        cmpRef.instance.survey2 = this.survey;
+        cmpRef.instance.surveydependency = this.surveydependency;
+        cmpRef.instance.namedependency = this.namedependency;
+        cmpRef.instance.name = this.name;
+        cmpRef.instance.survey_cond = this.survey_cond;
+        cmpRef.instance.affect = this.affect;
         cmpRef.instance.plt = this.plt;
         cmpRef.instance.name = 'dynamic';
         //console.log('called');
@@ -297,7 +385,7 @@ export class DynamicSurveyComponent implements OnInit {
     return this.title;
   }
 
-  //get random integer
+     //get random integer
   getRandomInt(range){
     return Math.floor(Math.random() * range) + 1;
   }
@@ -327,24 +415,28 @@ export class DynamicSurveyComponent implements OnInit {
 
   // process survey if obj type is textbox
   process_survey_textbox(survey_string, i){
+      this.survey[i] = "";
       survey_string = [survey_string,
-          '<label class="item item-input">',
-          '<input type="text" ng-model="survey.' + i + '"', ' ng-change="inputchanged(\'' + i + '\')"></label>'
+          '<ion-item>',
+          '<ion-input ngDefaultControl type="text" placeholder="Enter here" [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchanged(\'' + i + '\')"></ion-input></ion-item>'
       ].join(" ");
       return survey_string;
 
   }
 
     // process survey if obj type is timepicker
-    process_survey_timepicker(survey_string, i){
-      this.survey[i] = new Date();
-      survey_string = [survey_string,
-          '<div class="item item-icon-left" ion-datetime-picker time am-pm ng-model="survey.' + i + '"', ' ng-change="inputchangedtimepicker(\'' + i + '\')">',
-          '<i class="icon ion-ios-clock positive"></i>',
-          '<strong>{{survey.' + i + '| date: "h:mm a"}}</strong>',
-          '</div>'
-      ].join(" ");
-      return survey_string;
+  process_survey_timepicker(survey_string, i){
+    this.survey[i] = moment(new Date()).format('h:mm a');
+    survey_string = [survey_string,
+        // '<div class="item item-icon-left" ion-datetime-picker time am-pm [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchangedtimepicker(\'' + i + '\')">',
+        // '<i class="icon ion-ios-clock positive"></i>',
+        // '<strong>{{survey.' + i + '| date: "h:mm a"}}</strong>',
+        // '</div>'
+        
+        '<ion-datetime ngDefaultControl display-format="h:mm a" pickerFormat="h:mm a" [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchangedtimepicker(survey2.' + i + ')">',
+        '</ion-datetime>'
+        ].join(" ");
+    return survey_string;
   }
 
   // process survey if obj type is comment
@@ -377,11 +469,11 @@ export class DynamicSurveyComponent implements OnInit {
   process_survey_mood(survey_string, i){
       survey_string = [survey_string,
           '<div class="radioimages">',
-          '<label><input type="radio" ng-model="survey.' + i + '" value="high-sad" ng-change="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/5.png></label>',
-          '<label><input type="radio" ng-model="survey.' + i + '" value="low-sad" ng-change="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/4.png></label>',
-          '<label><input type="radio" ng-model="survey.' + i + '" value="neutral" ng-change="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/3.png></label>',
-          '<label><input type="radio" ng-model="survey.' + i + '" value="low-happy"  ng-change="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/2.png></label>',
-          '<label><input type="radio" ng-model="survey.' + i + '" value="high-happy"  ng-change="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/1.png></label>',
+          '<label><input ngDefaultControl type="radio" [(ngModel)]="survey2.' + i + '" value="high-sad" (ionChange)="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/5.png></label>',
+          '<label><input ngDefaultControl type="radio" [(ngModel)]="survey2.' + i + '" value="low-sad" (ionChange)="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/4.png></label>',
+          '<label><input ngDefaultControl type="radio" [(ngModel)]="survey2.' + i + '" value="neutral" (ionChange)="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/3.png></label>',
+          '<label><input ngDefaultControl type="radio" [(ngModel)]="survey2.' + i + '" value="low-happy"  (ionChange)="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/2.png></label>',
+          '<label><input ngDefaultControl type="radio" [(ngModel)]="survey2.' + i + '" value="high-happy"  (ionChange)="inputchanged(\'' + i + '\')"/><img style="width:18%;" src=img/1.png></label>',
           '</label></div>'
       ].join(" ");
 
@@ -429,14 +521,14 @@ export class DynamicSurveyComponent implements OnInit {
       survey_string = survey_string +
       '<label class="item item-input">' +
       '<input ion-autocomplete type="text" readonly="readonly" ' +
-      'class="ion-autocomplete" autocomplete="on" ng-model="survey.' + i +
+      'class="ion-autocomplete" autocomplete="on" [(ngModel)]="survey2.' + i +
       '" max-selected-items="1" items-method-value-key="items" ' +
       'items-method="callbackMethod(query,isInitializing,componentId)" ' +
       'items-clicked-method="clickedMethod(callback)" ' +
       'title-text = "' + obj.text + '" ' +
       'id="Q' + i + '" ' +
       'component-id="' + i + '"' +
-      ' ng-change="inputchanged(\'' + i + '\')"/>' +
+      ' (change)="inputchanged(\'' + i + '\')"/>' +
       '</label>';
       var options = obj.extra;
 
@@ -488,7 +580,7 @@ export class DynamicSurveyComponent implements OnInit {
           for (var j = 0; j < obj.extra.choices.length; j++) {
 
               survey_string = [survey_string,
-                  '<li><input type="radio" id="option' + i + "I" + j + '" name="' + i + '" [(ngModel)]="survey.' + i + '" value="' + obj.extra.choices[j] + '"  ng-change="inputchanged(\'' + i + '\')">',
+                  '<li><input type="radio" id="option' + i + "I" + j + '" name="' + i + '" [(ngModel)]="survey2.' + i + '" value=" ' + obj.extra.choices[j] + '" (change)="inputchanged(\'' + i + '\')">',
                   '<label for="option' + i + "I" + j + '">' + obj.extra.choices[j] + '</label>',
                   '<div class="check"></div></li>'
               ].join(" ");
@@ -503,7 +595,7 @@ export class DynamicSurveyComponent implements OnInit {
       //------------------------------------------------------ 
       //radio button, horizontal     
       //------------------------------------------------------
-      if (obj.extra.orientation == "horzontal") {
+      if (obj.extra.orientation == "horizontal") {
 
           survey_string = survey_string + '<div class="radiohorizontal"><ul>';
 
@@ -511,16 +603,16 @@ export class DynamicSurveyComponent implements OnInit {
           survey_string = survey_string + '<li><p>' + obj.extra.choices[0] + '</p></li>';
 
           //middle text
-          for (var j = 0; j < obj.extra.levels; j++) {
+          for (var j = 0; j < obj.extra.choices.length; j++) {
               survey_string = [survey_string,
-                  '<li><input type="radio" id="option' + i + "I" + j + '" name="' + i + '" ng-model="survey.' + i + '" value="' + j + '"  ng-change="inputchanged(\'' + i + '\')">',
+                  '<li><input type="radio" id="option' + i + "I" + j + '" name="' + i + '" [(ngModel)]="survey2.' + i + '" value="' + j + '" (change)="inputchanged(\'' + i + '\')">',
                   '<label for="option' + i + "I" + j + '"></label>',
                   '<div class="check"></div></li>'
               ].join(" ");
           }
 
           //ending text
-          survey_string = survey_string + '<li><p>' + obj.extra.choices[1] + '</p></li>';
+          survey_string = survey_string + '<li><p>' + obj.extra.choices[obj.extra.choices.length-1] + '</p></li>';
 
           survey_string = survey_string + '</ul></div>';
       }
@@ -536,7 +628,7 @@ export class DynamicSurveyComponent implements OnInit {
       var step = obj.extra.choices[4];
       this.survey[i] = 0;
       survey_string = [survey_string,
-          '<div class = "row" style="margin-bottom=0px;">',
+/*           '<div class = "row" style="margin-bottom=0px;">',
           '<div class = "col col-10"><p align="center" style="padding-top:2px;padding-bottom:2px;margin:0px;border-radius:5px;background:#4e5dca;color:white;">' + min + '</p></div>',
           '<div class = "col col-10"></div>',
           '<div class = "col col-20 col-offset-20"><p align="center" style="padding-top:2px;padding-bottom:2px;margin:0px;border-radius:25px;background:#303F9F;color:white;"><b>{{survey.' + i + '}}</b></p></div>',
@@ -545,9 +637,15 @@ export class DynamicSurveyComponent implements OnInit {
           '</div>',
           '<div class="item range range-balanced" style="padding:10px;padding-top:1px;border-width:0px;">',
           '<p style="text-align: center;color: black;">' + obj.extra.choices[0] + "</p>",
-          '<input type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" ng-model="survey.' + i + '" name="' + i + '" ng-change="inputchanged(\'' + i + '\')"' + '>',
+          '<input type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (change)="inputchanged(\'' + i + '\')"' + '>',
           '<p style="text-align: center;color:black;">' + obj.extra.choices[1] + "</p>",
-          '</div>',
+          '</div>', */
+          '<ion-item><ion-range ngDefaultControl min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (ionChange)="inputchanged(\'' + i + '\')"' + '>',
+          '<ion-label slot="start">'+obj.extra.choices[0]+'</ion-label>',
+          '<ion-label slot="end">'+ obj.extra.choices[1]+'</ion-label>',
+          '</ion-range>',
+          '</ion-item>',
+
       ].join(" ");
 
       return survey_string;
@@ -565,7 +663,7 @@ export class DynamicSurveyComponent implements OnInit {
           '</div>',
           '<div class="item range range-balanced" style="padding:10px;border-width:0px;">',
           '<p style="text-align: center;color: black;">' + obj.extra.choices[0] + "</p>",
-          '<input type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" ng-model="survey.' + i + '" name="' + i + '" ng-change="inputchanged(\'' + i + '\')"' + '>',
+          '<input ngDefaultControl type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (change)="inputchanged(\'' + i + '\')"' + '>',
           '<p style="text-align: center;color:black;">' + "24<br>hours" + "</p>",
           '</div>',
       ].join(" ");
@@ -575,11 +673,16 @@ export class DynamicSurveyComponent implements OnInit {
 
   // process survey if obj type is checkbox
   process_survey_checkbox(obj, survey_string, i){
-      survey_string = survey_string + '<div class="list">';
+      survey_string = survey_string + '<ion-list>';
       for (var j = 0; j < obj.extra.choices.length; j++) {
-          survey_string = [survey_string, '<ion-checkbox style="border-color:#fff;border-width: 0px;" ng-model="survey.' + i + 'O' + j + '" ng-change="inputchanged(\'' + i + '\')"' + '>' + obj.extra.choices[j] + '</ion-checkbox>'].join(" ");
+          survey_string = [survey_string, 
+             '<ion-item>',
+             '<ion-label>'+ obj.extra.choices[j]+'</ion-label>',
+             '<ion-checkbox ngDefaultControl color="light" [(ngModel)]="survey2.' + i + 'O' + j + '" (ionChange)="inputchanged(\'' + i + '\')"' + '></ion-checkbox>',
+             '</ion-item>'
+            ].join(" ");
       }
-      survey_string = survey_string + '</div>';
+      survey_string = survey_string + '</ion-list>';
       if(this.choices == undefined) this.choices = {};
       this.choices[obj.name]= obj.extra.choices;
 
@@ -629,21 +732,22 @@ export class DynamicSurveyComponent implements OnInit {
 
       console.log(obj.name);
       var show_array = obj.extra.dependency.show;
+
       if(show_array == undefined) {
 
-      //console.log(obj.extra.dependency.question);
-      //console.log($scope.choices[obj.extra.dependency.question]);
-      if(this.choices[obj.extra.dependency.question] instanceof Array ) {
-          show_array = this.choices[obj.extra.dependency.question].slice();
-      }
+        //console.log(obj.extra.dependency.question);
+        //console.log($scope.choices[obj.extra.dependency.question]);
+        if(this.choices[obj.extra.dependency.question] instanceof Array ) {
+            show_array = this.choices[obj.extra.dependency.question].slice();
+        }
 
-      for (var j = 0; j < obj.extra.dependency.hide.length; j++){
-          //console.log(obj.extra.dependency.hide[j]);
+        for (var j = 0; j < obj.extra.dependency.hide.length; j++){
+            //console.log(obj.extra.dependency.hide[j]);
 
-          var index = show_array.indexOf(obj.extra.dependency.hide[j]);
-          show_array.splice(index, 1);
-      }
-      //console.log(show_array);
+            var index = show_array.indexOf(obj.extra.dependency.hide[j]);
+            show_array.splice(index, 1);
+        }
+        //console.log(show_array);
 
       }
 
@@ -708,7 +812,7 @@ export class DynamicSurveyComponent implements OnInit {
           console.log(JSON.stringify(this.survey)+" "+obj.extra.dependency.show);
 
           survey_string = [survey_string,
-              '<div class="card" ng-show=(' + "survey." + obj.extra.dependency.question + ' =="'+ obj.extra.dependency.show + '"' + ')>',
+              '<div class="card" ng-show=(' + "survey2." + obj.extra.dependency.question + ' =="'+ obj.extra.dependency.show + '"' + ')>',
               //'<div class="card" ng-show=' + false + '>', 
               '<div class="quetiontextstyle">',
               obj.text,
@@ -730,7 +834,7 @@ export class DynamicSurveyComponent implements OnInit {
     if (obj.type == 'random') {
       this.process_survey_random(obj, survey_string, i);
 
-  } else {
+    } else {
       //
        if (obj.type == "captcha") {
 
@@ -834,97 +938,10 @@ export class DynamicSurveyComponent implements OnInit {
           survey_string = this.process_survey_checkbox(obj, survey_string, i);
       }
 
-      //survey_string = survey_string + '</div>';
+      survey_string = survey_string + '</div>';
     }
     return survey_string;
   }
 
-  affectclick(index, q, mood) {
-    console.log("" + index + ", " + mood);
-
-    //
-    //if(index == 1){
-    if (this.affect[index - 1].includes("<u>"))
-      this.affect[index - 1] = this.affect[index - 1].replace('<u><b>', '').replace('</b></u>', '');
-    else
-      this.affect[index - 1] = '<u><b>' + this.affect[index - 1] + '</b></u>';
-    //}
-
-    for (var i = 0; i < this.affect.length; i++) {
-        if ((i + 1) == index)
-            continue;
-        else {
-            this.affect[i] = this.affect[i].replace('<u><b>', '');
-            this.affect[i] = this.affect[i].replace('</b></u>', '');
-            //console.log($scope.affect);
-        }
-    }
-
-    this.reponse_ts[q] = {};
-    this.reponse_ts[q].ts = Date.now();
-    this.reponse_ts[q].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-    this.survey[q] = mood;
-    console.log(JSON.stringify(this.survey));
-  }
-
-  inputchanged(questions) {
-        //console.log("Qs:" + questions + ", ts:" + Date.now() + ", readable_time:" + moment().format("MMMM Do YYYY, h:mm:ss a"));
-
-        this.reponse_ts[questions] = {};
-        this.reponse_ts[questions].ts = Date.now();
-        this.reponse_ts[questions].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-        //console.log(JSON.stringify($scope.survey));
-        console.log(questions);
-        if(this.name[questions] != null) {
-            for (var j = 0; j < this.name[questions].length; j++){
-                var name= this.name[questions][j];
-                if(this.surveydependency!=undefined && this.surveydependency[name+questions]!=undefined) {
-                    //console.log(JSON.stringify($scope.surveydependency));
-                    this.hackQ3d(this.surveydependency[name+questions],name+questions);
-                }
-    
-                //handle the case when there is empty space in the show array
-                if(this.namedependency!=undefined && this.namedependency[name+questions]!=undefined) {
-                    console.log(JSON.stringify(this.namedependency));
-                    this.hackQ10d(this.namedependency[name+questions],name+questions,questions);
-                }
-            }
-        }
-    }
-
-   hackQ3d(s,label){
-        //console.log("True " +  ($scope.survey.Q3d==undefined || $scope.survey.Q3d=='0' || $scope.survey.Q3d=='0.5'));
-        this.survey_cond[label+ "Show"] = eval(s);
-         console.log("hackQ3d "+label + "Show "+this.survey_cond[label + "Show"]);
-   }
-
-   hackQ10d(s,label,questions){
-        //console.log("True " +  ($scope.survey.Q3d==undefined || $scope.survey.Q3d=='0' || $scope.survey.Q3d=='0.5'));
-        var sel = this.survey[questions];
-        var dep = s ;
-        //console.log("compareSelectionWithDependency "+questions+" "+sel+" "+s);
-        if(sel!=undefined && s!= undefined){
-           sel = sel.replace(/\s+/g, "");
-           dep = s.replace(/\s+/g, "");
-        }
-        this.survey_cond[label + "Show"] = false;
-        if(sel === dep)
-        { 
-          this.survey_cond[label + "Show"]=true;
-        }
-
-        console.log("hackQ10d "+name+" for "+questions+" "+this.survey_cond[label + "Show"]);
-
-    }
-
-
-    inputchangedtimepicker(questions) {
-        var x = this.survey[questions];
-        this.survey[questions] = moment(x).format('h:mm a');
-        this.survey[questions + "_tz"] = moment(x).format('h:mma Z');
-        this.inputchanged(questions);
-    }
 
 }
