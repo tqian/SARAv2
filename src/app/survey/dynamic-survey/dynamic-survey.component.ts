@@ -17,14 +17,15 @@ export class DynamicSurveyComponent implements OnInit {
 
   title = "mash is here";
 
-  /*survey_data = [
+  //survey_data: any;
+  survey_data = [
     {
       "name": "Q1d",
       "text": "How stressed are you today?",
       "type": "radiobutton",
       "extra": {
         "choices": ["Not<br>at all", "A<br>lot"],
-        "orientation": "horzontal",
+        "orientation": "horizontal",
         "levels": 5
       }
     },
@@ -41,18 +42,18 @@ export class DynamicSurveyComponent implements OnInit {
       "name": "Q2d",
       "text": "How are you feeling today? Please click on the spot that best represents your mood",
       "type": "moodgrid2"
-    },
-    {
+    }
+    /*,{
       "name": "Q3d",
       "text": "How much free time have you had today?",
       "type": "range2",
       "extra": {
         "choices": ["0<br>hour", "600<br>min", 0, 1440, 60]
       }
-    }
-  ];*/
+    }*/
+  ];
   survey_string = "";
-  survey_data: any;
+  
   survey: {};
   surveydependency;
   namedependency;
@@ -74,16 +75,20 @@ export class DynamicSurveyComponent implements OnInit {
     private EncrDecr: EncrDecrService,
     public plt: Platform) {
       console.log('Reading local json files');
-      fetch('../../../assets/data/data1.json').then(async res => {
+      /*
+      fetch('../../../assets/data/temp_survey.json').then(async res => {
         this.survey_data = await res.json();
         this.init();
       });
+      */
+      //this.survey_data = await res.json();
+      this.init();
     }
 
   ngOnInit() {
   }
 
-//  ngAfterViewInit() {
+  // ngAfterViewInit() {
   init() {
     //TODO: Two-way binding, and call functions. Multiple choice/affect-grid.
     //TODO: Ask Liying to do the JSON.
@@ -574,6 +579,7 @@ export class DynamicSurveyComponent implements OnInit {
       //------------------------------------------------------ 
       //radio button, vertical     
       //------------------------------------------------------   
+      
       if (obj.extra.orientation == "vertical") {
           survey_string = survey_string + '<div class="radiovertical"><ul>';
 
@@ -595,6 +601,7 @@ export class DynamicSurveyComponent implements OnInit {
       //------------------------------------------------------ 
       //radio button, horizontal     
       //------------------------------------------------------
+      //console.log("Here: " + JSON.stringify(obj.extra.orientation) + ", " + obj.extra.choices.length);
       if (obj.extra.orientation == "horizontal") {
 
           survey_string = survey_string + '<div class="radiohorizontal"><ul>';
@@ -603,17 +610,17 @@ export class DynamicSurveyComponent implements OnInit {
           survey_string = survey_string + '<li><p>' + obj.extra.choices[0] + '</p></li>';
 
           //middle text
-          for (var j = 0; j < obj.extra.choices.length; j++) {
+          for (var j = 0; j < obj.extra.levels; j++) {
               survey_string = [survey_string,
                   '<li><input type="radio" id="option' + i + "I" + j + '" name="' + i + '" [(ngModel)]="survey2.' + i + '" value="' + j + '" (change)="inputchanged(\'' + i + '\')">',
                   '<label for="option' + i + "I" + j + '"></label>',
                   '<div class="check"></div></li>'
               ].join(" ");
+              //console.log("" + j + ", " + obj.extra.choices.length);
           }
 
           //ending text
           survey_string = survey_string + '<li><p>' + obj.extra.choices[obj.extra.choices.length-1] + '</p></li>';
-
           survey_string = survey_string + '</ul></div>';
       }
 
