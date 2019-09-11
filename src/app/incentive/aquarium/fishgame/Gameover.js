@@ -1,4 +1,3 @@
-
 export class GameOver extends Phaser.State {
     //componentObject;
     constructor(){
@@ -7,7 +6,7 @@ export class GameOver extends Phaser.State {
     }
     create() {
         this.stage.backgroundColor = '#000000';
-        var s = this.add.sprite(this.world.centerX, this.world.centerY, 'gameover');
+        var s = this.add.sprite(this.world.centerX, this.world.centerY, 'Gameover');
         s.anchor.setTo(.5,.5);
     }
 
