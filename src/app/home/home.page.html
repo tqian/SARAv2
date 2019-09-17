@@ -24,7 +24,45 @@
     <ion-button href="/survey/dynamicsurvey">Dynamic survey (demo)</ion-button> <br>
     <ion-button href="/incentive/award-memes" >Incentive: meme</ion-button> <br>
     <ion-button href="/incentive/visualization">Incentive: Life-inisight</ion-button> <br>
-    <ion-button href="/incentive/aquariumone">Incentive: Aquarium 1</ion-button> 
+    <!--ion-button href="/incentive/aquariumone">Incentive: Aquarium (Game)</ion-button--> 
+    <ion-card> 
+      <div class="radiovertical">
+      <ul>       
+        <li>
+          <input type="radio" id="ff-option" name="selector" (click)="pickGame('GameSmall')">
+          <label for="ff-option">GameSmall</label> 
+          <div class="check"></div>
+        </li>
+        
+        <li>
+          <input type="radio" id="gg-option" name="selector" (click)="pickGame('GameOver')">
+          <label for="gg-option">GameOver</label>
+          <div class="check"></div>
+        </li>
+        
+        <li>
+          <input type="radio" id="hh-option" name="selector" (click)="pickGame('Game')">
+          <label for="hh-option">Game</label>
+          <div class="check"></div>
+        </li>
+
+        <li>
+          <input type="radio" id="ii-option" name="selector" (click)="pickGame('Level1')">
+          <label for="ii-option">Level1</label>
+          <div class="check"></div>
+        </li>
+        
+        <li>
+          <input type="radio" id="jj-option" name="selector" (click)="pickGame('Level1Small')">
+          <label for="jj-option">Level1Small</label>
+          <div class="check"></div>
+        </li>
+
+      </ul>
+    </div>
+    <ion-button (click)="startGame()">Select: Aquarium (Game) </ion-button>
+    <!--ion-button href="/incentive/aquariumone">Select: Aquarium (Game) </ion-button--> 
+    </ion-card>
   </div>
 
   <!--    <app-demo-aquarium></app-demo-aquarium>   -->

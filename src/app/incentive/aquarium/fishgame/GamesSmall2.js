@@ -4,6 +4,7 @@ export class GameSmall extends Phaser.State {
         super();
         this.componentObject;
     }
+    
     create() {
         this.gameover = false;
         this.totalClicks = 0;

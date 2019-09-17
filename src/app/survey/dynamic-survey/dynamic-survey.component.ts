@@ -98,7 +98,6 @@ export class DynamicSurveyComponent implements OnInit {
     this.survey = {};
     this.survey_string = "";
     for (let obj of this.survey_data) {
-      this.survey[obj.name] = "";
       this.survey_string = this.process_survey(obj, this.survey_string, obj.name);
       console.log("Done " + this.survey_string);
     }
@@ -114,6 +113,7 @@ export class DynamicSurveyComponent implements OnInit {
       name;
       surveydependency;
       namedependency;
+      input;
     
       storeToFirebaseService: StoreToFirebaseService;
       EncrDecr: EncrDecrService;
@@ -302,7 +302,7 @@ export class DynamicSurveyComponent implements OnInit {
            console.log("hackQ3d "+label + "Show "+this.survey_cond[label + "Show"]);
      }
   
-     hackQ10d(s,label,questions){
+    hackQ10d(s,label,questions){
           //console.log("True " +  ($scope.survey.Q3d==undefined || $scope.survey.Q3d=='0' || $scope.survey.Q3d=='0.5'));
           var sel = this.survey2[questions];
           var dep = s ;
@@ -319,34 +319,57 @@ export class DynamicSurveyComponent implements OnInit {
   
           console.log("hackQ10d "+name+" for "+questions+" "+this.survey_cond[label + "Show"]);
   
-      }
+    }
 
-      inputchanged(questions) {
+    inputchanged(question) {
         //console.log("Qs:" + questions + ", ts:" + Date.now() + ", readable_time:" + moment().format("MMMM Do YYYY, h:mm:ss a"));
-        console.log('holla: ' + questions+" "+this.survey2["Q18O1"]);
+        console.log('holla: ' + question);
         console.log(JSON.stringify(this.survey2));
 
-        this.reponse_ts[questions] = {};
-        this.reponse_ts[questions].ts = Date.now();
-        this.reponse_ts[questions].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
-
-        //console.log(JSON.stringify($scope.survey));
-        if(this.name[questions] != null) {
-            for (var j = 0; j < this.name[questions].length; j++){
-                var name= this.name[questions][j];
-                if(this.surveydependency!=undefined && this.surveydependency[name+questions]!=undefined) {
-                    //console.log(JSON.stringify($scope.surveydependency));
-                    this.hackQ3d(this.surveydependency[name+questions],name+questions);
-                }
+        this.processExtraCondition(question);
+    }  
     
-                //handle the case when there is empty space in the show array
-                if(this.namedependency!=undefined && this.namedependency[name+questions]!=undefined) {
-                    console.log(JSON.stringify(this.namedependency));
-                    this.hackQ10d(this.namedependency[name+questions],name+questions,questions);
-                }
-            }
-        }
-    }      
+    inputChangedForCheckBox(question, item, $event){
+      console.log('holla: ' + question+" "+JSON.stringify($event.detail));
+      this.survey2[item] = $event.detail.checked;
+      console.log(JSON.stringify(this.survey2));
+
+      this.processExtraCondition(question);
+    }
+    
+    inputChangedWithEvent(question, $event) {
+      //console.log("Qs:" + questions + ", ts:" + Date.now() + ", readable_time:" + moment().format("MMMM Do YYYY, h:mm:ss a"));
+      console.log('holla: ' + question+" "+JSON.stringify($event.detail));
+      this.survey2[question] = $event.detail.value;
+      console.log(JSON.stringify(this.survey2));
+
+      this.processExtraCondition(question);
+
+     }    
+
+    processExtraCondition(question){
+      this.reponse_ts[question] = {};
+      this.reponse_ts[question].ts = Date.now();
+      this.reponse_ts[question].readable_ts = moment().format("MMMM Do YYYY, h:mm:ss a");
+
+      //console.log(JSON.stringify($scope.survey));
+      if(this.name[question] != null) {
+          for (var j = 0; j < this.name[question].length; j++){
+              var name= this.name[question][j];
+              if(this.surveydependency!=undefined && this.surveydependency[name+question]!=undefined) {
+                  //console.log(JSON.stringify($scope.surveydependency));
+                  this.hackQ3d(this.surveydependency[name+question],name+question);
+              }
+  
+              //handle the case when there is empty space in the show array
+              if(this.namedependency!=undefined && this.namedependency[name+question]!=undefined) {
+                  console.log(JSON.stringify(this.namedependency));
+                  this.hackQ10d(this.namedependency[name+question],name+question,question);
+              }
+          }
+      }
+    }
+    
       
   /*   inputchangedtimepicker(questions) {
       var x = this.survey2[questions];
@@ -356,11 +379,13 @@ export class DynamicSurveyComponent implements OnInit {
       this.inputchanged(questions);
     }
  */
-      inputchangedtimepicker(pickedTime){
-        console.log(JSON.stringify(this.survey2));
-        //pickedTime = moment(pickedTime).format('h:mm a')
-        console.log(pickedTime);
-       }
+    inputchangedtimepicker(question, $event){
+      console.log(question);
+      //pickedTime = moment(pickedTime).format('h:mm a')
+      console.log(moment($event.detail.value).format('h:mm a'));
+      this.survey2[question]=moment($event.detail.value).format('h:mm a');
+      console.log(this.survey2);
+    }
 
 
     });
@@ -423,7 +448,7 @@ export class DynamicSurveyComponent implements OnInit {
       this.survey[i] = "";
       survey_string = [survey_string,
           '<ion-item>',
-          '<ion-input ngDefaultControl type="text" placeholder="Enter here" [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchanged(\'' + i + '\')"></ion-input></ion-item>'
+          '<ion-input ngDefaultControl type="text" placeholder="Enter here" (ionChange)="inputChangedWithEvent(\'' + i + '\', $event)"></ion-input></ion-item>'
       ].join(" ");
       return survey_string;
 
@@ -438,7 +463,8 @@ export class DynamicSurveyComponent implements OnInit {
         // '<strong>{{survey.' + i + '| date: "h:mm a"}}</strong>',
         // '</div>'
         
-        '<ion-datetime ngDefaultControl display-format="h:mm a" pickerFormat="h:mm a" [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchangedtimepicker(survey2.' + i + ')">',
+        //'<ion-datetime ngDefaultControl display-format="h:mm a" pickerFormat="h:mm a" [(ngModel)]="survey2.' + i + '"', ' (ionChange)="inputchangedtimepicker(survey2.' + i + ')">',
+        '<ion-datetime ngDefaultControl display-format="h:mm a" (ionChange)="inputchangedtimepicker(\'' + i + '\', $event)">',
         '</ion-datetime>'
         ].join(" ");
     return survey_string;
@@ -647,7 +673,9 @@ export class DynamicSurveyComponent implements OnInit {
           '<input type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (change)="inputchanged(\'' + i + '\')"' + '>',
           '<p style="text-align: center;color:black;">' + obj.extra.choices[1] + "</p>",
           '</div>', */
-          '<ion-item><ion-range ngDefaultControl min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (ionChange)="inputchanged(\'' + i + '\')"' + '>',
+          
+          //'<ion-item><ion-range ngDefaultControl min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (ionChange)="inputchanged(\'' + i + '\')"' + '>',
+          '<ion-item><ion-range ngDefaultControl min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" name="' + i + '" (ionChange)="inputChangedWithEvent(\'' + i + '\', $event)"' + '>',
           '<ion-label slot="start">'+obj.extra.choices[0]+'</ion-label>',
           '<ion-label slot="end">'+ obj.extra.choices[1]+'</ion-label>',
           '</ion-range>',
@@ -658,25 +686,6 @@ export class DynamicSurveyComponent implements OnInit {
       return survey_string;
   }    
 
-  // process survey if obj type is range2
-  process_survey_range2(obj, survey_string, i){
-      var min = obj.extra.choices[2];
-      var max = obj.extra.choices[3];
-      var step = obj.extra.choices[4];
-      this.survey[i] = 25*60;
-      survey_string = [survey_string,
-          '<div class = "row">',
-          '<div class = "col col-33 col-offset-67"><p align="center" style="padding:5px;border-radius:25px;background:#303F9F;color:white;"><b>{{survey.' + i + '/60}} hours</b></p></div>',
-          '</div>',
-          '<div class="item range range-balanced" style="padding:10px;border-width:0px;">',
-          '<p style="text-align: center;color: black;">' + obj.extra.choices[0] + "</p>",
-          '<input ngDefaultControl type="range" min="' + min + '" max="' + max + '" value="' + min + '" step="' + step + '" [(ngModel)]="survey2.' + i + '" name="' + i + '" (change)="inputchanged(\'' + i + '\')"' + '>',
-          '<p style="text-align: center;color:black;">' + "24<br>hours" + "</p>",
-          '</div>',
-      ].join(" ");
-
-      return survey_string;
-  }   
 
   // process survey if obj type is checkbox
   process_survey_checkbox(obj, survey_string, i){
@@ -685,7 +694,8 @@ export class DynamicSurveyComponent implements OnInit {
           survey_string = [survey_string, 
              '<ion-item>',
              '<ion-label>'+ obj.extra.choices[j]+'</ion-label>',
-             '<ion-checkbox ngDefaultControl color="light" [(ngModel)]="survey2.' + i + 'O' + j + '" (ionChange)="inputchanged(\'' + i + '\')"' + '></ion-checkbox>',
+            // '<ion-checkbox ngDefaultControl color="light" [(ngModel)]="survey2.' + i + 'O' + j + '" (ionChange)="inputChangedWithEvent(\'' + i + '\')"' + '></ion-checkbox>',
+             '<ion-checkbox ngDefaultControl color="light" (ionChange)="inputChangedForCheckBox(\'' + i + '\', \'' + i + 'O' + j +'\', $event)"' + '></ion-checkbox>',
              '</ion-item>'
             ].join(" ");
       }
@@ -932,11 +942,6 @@ export class DynamicSurveyComponent implements OnInit {
       if (obj.type == "range") {
           survey_string = this.process_survey_range(obj, survey_string, i);
       }
-
-      if (obj.type == "range2") {
-          survey_string = this.process_survey_range2(obj, survey_string, i);
-      }
-
 
       //------------------------------------------------------                  
       //checkbox  
