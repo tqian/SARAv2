@@ -21,6 +21,7 @@ export class DemoAquariumComponent implements OnInit {
 
   game;
   pickedGame;
+  totalPoints;
 
   constructor(private router: Router, 
     //private pickGameService: PickGameService,
@@ -29,8 +30,8 @@ export class DemoAquariumComponent implements OnInit {
     
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
-        this.pickedGame = this.router.getCurrentNavigation().extras.state.game;
-        console.log("Inside condition");
+        this.totalPoints = this.router.getCurrentNavigation().extras.state.totalPoints;
+        console.log("Pass totalPoints: "+this.totalPoints);
       }
     });
   }
@@ -56,7 +57,6 @@ export class DemoAquariumComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("ngOnInit: "+this.pickedGame);
     this.game =  new Phaser.Game(
       window.innerWidth, 700,
       Phaser.AUTO,
@@ -65,21 +65,35 @@ export class DemoAquariumComponent implements OnInit {
 
     this.game.state.add('Boot', Boot);
     var preLoader = new Preloader();
-    preLoader.setGameName(this.pickedGame);
-    this.game.state.add('Preloader', preLoader);
-    if(this.pickedGame == 'Game') {
-      this.game.state.add('Game', Game);
-    } else if(this.pickedGame == 'GameSmall')
-    {
-      this.game.state.add('GameSmall', GameSmall);
+
+    if(this.totalPoints <770 && this.totalPoints > 0){
+      preLoader.setGameName(this.pickedGame = "GameSmall");
+      this.game.state.add('Preloader', preLoader);
+      var gameSmall = new GameSmall();
+      gameSmall.setTotalPoints(this.totalPoints);
+      this.game.state.add('GameSmall', gameSmall);
+    } else if ( this.totalPoints >=770 && this.totalPoints <1060 ){
+      preLoader.setGameName(this.pickedGame = "Game");
+      this.game.state.add('Preloader', preLoader);
+      var game = new Game();
+      game.setTotalPoints(this.totalPoints);
+      this.game.state.add('Game', game);
+    } else if( this.totalPoints >=1060 && this.totalPoints <1710 ){
+      preLoader.setGameName(this.pickedGame = "Level1Small");
+      this.game.state.add('Preloader', preLoader);
+      var level1Small = new Level1Small();
+      level1Small.setTotalPoints(this.totalPoints);
+      this.game.state.add('Level1Small', level1Small);
+    } else if( this.totalPoints >=1710 ){
+      preLoader.setGameName(this.pickedGame = "Level1");
+      this.game.state.add('Preloader', preLoader);
+      var level1 = new Level1();
+      level1.setTotalPoints(this.totalPoints);
+      this.game.state.add('Level1', level1);
     }
-    else if(this.pickedGame == 'Level1')
-    {
-      this.game.state.add('Level1', Level1);
-    }
-    else if(this.pickedGame == 'Level1Small')
-    {
-      this.game.state.add('Level1Small', Level1Small);
+    else {
+      preLoader.setGameName(this.pickedGame = "GameOver");
+      this.game.state.add('Preloader', preLoader);
     }
     this.game.state.add('GameOver', GameOver);
     this.game.state.start('Boot');

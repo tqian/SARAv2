@@ -48,7 +48,7 @@ export class GameSmall extends Phaser.State {
         this.badgecount = this.add.bitmapText(30, 73, 'eightbitwonder', "" + 2, 12);
 
         //
-        this.totalPoints = 770;
+        //this.totalPoints = 770;
         this.buildFish();
         this.addFishes();
 
@@ -478,4 +478,8 @@ export class GameSmall extends Phaser.State {
     assignscope(componentObject){
         this.componentObject = componentObject;
     }
+
+	setTotalPoints(totalPoints){
+		this.totalPoints = totalPoints;
+	}    
 }

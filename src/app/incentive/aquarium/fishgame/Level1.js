@@ -8,7 +8,7 @@ export class Level1 extends Phaser.State {
     create(){
         this.gameover = false;
         this.totalClicks = 0;
-        this.totalPoints = this.ionic_scope.total_points;
+        //this.totalPoints = this.ionic_scope.total_points;
         //this.music = this.add.audio('game_audio');
         //this.music.play('', 0, 1.0, true);
         
@@ -65,7 +65,7 @@ export class Level1 extends Phaser.State {
         pouch.scale.setTo(0.4, 0.4);
         pouch.anchor.setTo(.5,.5);
 
-        this.totalPoints = 1800;
+        //this.totalPoints = 1800;
         this.badgecount = this.add.bitmapText(30, 73, 'eightbitwonder', "" + 2, 12);
 
         //this.buildFish();
@@ -909,8 +909,12 @@ export class Level1 extends Phaser.State {
 
     updatescore(added_points) {
         console.log("Update score called inside game, " + this.ionic_scope.total_points);
-        this.totalPoints = this.ionic_scope.total_points;
+        //this.totalPoints = this.ionic_scope.total_points;
         this.addAFish(added_points);
         this.countdown.setText('Points: ' + this.totalPoints);
     }
+
+	setTotalPoints(totalPoints){
+		this.totalPoints = totalPoints;
+	}    
 }

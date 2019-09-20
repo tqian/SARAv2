@@ -8,19 +8,39 @@ import { Router, NavigationExtras } from '@angular/router';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  pickedGame;
+  pickedGame:string;
+  totalPoints;
   constructor(private router: Router){}
 
   pickGame(pickedGame){
-    console.log("pickGame "+pickedGame);   
     this.pickedGame = pickedGame;
-    //this.pickGameService.sendGameState(pickedGame);     
+    //this.pickGameService.sendGameState(pickedGame);    
+    if(this.pickedGame == 'Game') {
+      this.totalPoints = 1000;
+    } else if(this.pickedGame == 'GameSmall')
+    {
+      this.totalPoints = 770;
+    }
+    else if(this.pickedGame == 'Level1')
+    {
+      this.totalPoints = 2000;
+    }
+    else if(this.pickedGame == 'Level1Small')
+    {
+      this.totalPoints = 1700;
+    }
+    else {
+      this.totalPoints = -1;
+    }
+    console.log("pickGame "+pickedGame+" totalPoints: "+this.totalPoints);   
+
   }
 
   startGame(){
+    console.log("totalPoints: "+this.totalPoints);
     let navigationExtras: NavigationExtras = {
       state: {
-        game: this.pickedGame
+        totalPoints: this.totalPoints
       }
     };   
 

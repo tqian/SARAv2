@@ -8,7 +8,7 @@ export class Level1Small extends Phaser.State {
     create() {
         this.gameover = false;
         this.totalClicks = 0;
-        this.totalPoints = this.ionic_scope.total_points;
+        //this.totalPoints = this.ionic_scope.total_points;
         //this.music = this.add.audio('game_audio');
         //this.music.play('', 0, 1.0, true);
         
@@ -75,7 +75,7 @@ export class Level1Small extends Phaser.State {
         pouch.scale.setTo(0.4, 0.4);
         pouch.anchor.setTo(.5,.5);
 
-        this.totalPoints = 1200;
+        //this.totalPoints = 1200;
         this.badgecount = this.add.bitmapText(30, 73, 'eightbitwonder', "" + 2, 12);
 
         //this.buildFish();
@@ -955,4 +955,8 @@ export class Level1Small extends Phaser.State {
         this.addAFish(added_points);
         this.countdown.setText('Points: ' + this.totalPoints);
     }
-};
+
+    setTotalPoints(totalPoints){
+		this.totalPoints = totalPoints;
+	}
+}

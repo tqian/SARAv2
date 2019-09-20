@@ -56,7 +56,7 @@ export class Game extends Phaser.State {
         pouch.anchor.setTo(.5,.5);
         this.badgecount = this.add.bitmapText(30, 73, 'eightbitwonder', "" + 2, 12);
 
-        this.totalPoints = 1000;
+        //this.totalPoints = 1000;
         this.buildFish();
         this.addFishes();
 
@@ -1163,4 +1163,9 @@ export class Game extends Phaser.State {
     update(){
         //console.log("Update: isPrawnAdded, " + this.isPrawnAdded);
     }
+
+	setTotalPoints(totalPoints){
+		this.totalPoints = totalPoints;
+	}
+
 }
