@@ -27,7 +27,6 @@ export class VisualizationComponent implements OnInit {
   constructor() { 
     this.width = 900 - this.margin.left - this.margin.right;
     this.height = 500 - this.margin.top - this.margin.bottom;
-
   }
 
   ngOnInit() {
