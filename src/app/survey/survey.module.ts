@@ -9,12 +9,22 @@ import { StorageModule } from '../storage/storage.module';
 import { ActivetaskComponent } from './activetask/activetask.component';
 import { ActiveTask2Component } from './active-task2/active-task2.component';
 import { DynamicSurveyComponent } from './dynamic-survey/dynamic-survey.component';
+import { Routes, RouterModule } from '@angular/router';
+import { SampleSurveyComponent } from './sample-survey/sample-survey.component';
+
+/* const routes: Routes = [
+  { path: 'initated-drink', component: InitiatedDrinkComponent },
+  { path: 'activetask', component: ActivetaskComponent },
+  { path: 'activetask2', component: ActiveTask2Component },
+  { path: 'dynamicsurvey', component: DynamicSurveyComponent }, 
+]; */
 
 @NgModule({
-  declarations: [InitiatedDrinkComponent,MorningReportComponent,PromptedSurveyComponent,ActivetaskComponent,DynamicSurveyComponent,ActiveTask2Component],
+  declarations: [InitiatedDrinkComponent,MorningReportComponent,PromptedSurveyComponent,ActivetaskComponent,DynamicSurveyComponent,ActiveTask2Component,SampleSurveyComponent],
   imports: [
     CommonModule,
     IonicModule.forRoot(),
+    //RouterModule.forChild(routes),
     FormsModule,
     StorageModule
   ],
@@ -24,7 +34,8 @@ import { DynamicSurveyComponent } from './dynamic-survey/dynamic-survey.componen
     PromptedSurveyComponent,
     ActivetaskComponent,
     ActiveTask2Component,
-    DynamicSurveyComponent
+    DynamicSurveyComponent,
+    SampleSurveyComponent
   ]
 })
 export class SurveyModule { }

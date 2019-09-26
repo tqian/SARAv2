@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, ViewContainerRef, NgModule, Compiler, Injector, NgModuleRef, ElementRef, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, NgModule, Compiler, Injector, NgModuleRef, ElementRef, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { StoreToFirebaseService } from '../../storage/store-to-firebase.service';
 import { EncrDecrService } from '../../storage/encrdecrservice.service';
 import { Platform } from '@ionic/angular';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 //import survey_data from '../../../assets/data/data.json'; //conflict with moment
 
@@ -14,44 +15,11 @@ import * as moment from 'moment';
   styleUrls: ['./dynamic-survey.component.scss'],
 })
 export class DynamicSurveyComponent implements OnInit {
+  @Input() fileLink: string;
 
   title = "mash is here";
 
-  //survey_data: any;
-  survey_data = [
-    {
-      "name": "Q1d",
-      "text": "How stressed are you today?",
-      "type": "radiobutton",
-      "extra": {
-        "choices": ["Not<br>at all", "A<br>lot"],
-        "orientation": "horizontal",
-        "levels": 5
-      }
-    },
-    {
-      "name": "Q3",
-      "text": "This past week, did you concentrate easily?",
-      "type": "radiobutton",
-      "extra": {
-        "choices": ["Rarely/Never", "Occasionally", "Often", "Almost Always/Always"],
-        "orientation": "vertical"
-      }
-    },
-    {
-      "name": "Q2d",
-      "text": "How are you feeling today? Please click on the spot that best represents your mood",
-      "type": "moodgrid2"
-    }
-    /*,{
-      "name": "Q3d",
-      "text": "How much free time have you had today?",
-      "type": "range2",
-      "extra": {
-        "choices": ["0<br>hour", "600<br>min", 0, 1440, 60]
-      }
-    }*/
-  ];
+  survey_data: any;
   survey_string = "";
   
   survey: {};
@@ -73,19 +41,19 @@ export class DynamicSurveyComponent implements OnInit {
     private _m: NgModuleRef<any>, 
     private storeToFirebaseService: StoreToFirebaseService,
     private EncrDecr: EncrDecrService,
-    public plt: Platform) {
-      console.log('Reading local json files');
-      /*
-      fetch('../../../assets/data/temp_survey.json').then(async res => {
-        this.survey_data = await res.json();
-        this.init();
-      });
-      */
-      //this.survey_data = await res.json();
-      this.init();
+    private router: Router,
+    public plt: Platform) { 
     }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    console.log('Reading local json files: ' + this.fileLink);
+    fetch('../../../assets/data/'+this.fileLink+'.json').then(async res => {
+      this.survey_data = await res.json();
+      this.init();
+    });
   }
 
   // ngAfterViewInit() {

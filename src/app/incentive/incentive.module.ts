@@ -7,12 +7,18 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { DemoAquariumComponent } from './aquarium/demo-aquarium/demo-aquarium.component';
 
 @NgModule({
-  declarations: [AwardComponent, AwardMemesComponent, VisualizationComponent, DemoAquariumComponent],
+  declarations: [AwardComponent, 
+    AwardMemesComponent, 
+    VisualizationComponent, 
+    DemoAquariumComponent],
   imports: [
     CommonModule,
     IonicModule.forRoot()
   ],
-  exports:[AwardComponent, AwardMemesComponent, VisualizationComponent],
+  exports:[AwardComponent, 
+    AwardMemesComponent, 
+    VisualizationComponent, 
+    DemoAquariumComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class IncentiveModule { }

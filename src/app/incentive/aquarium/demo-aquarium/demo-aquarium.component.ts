@@ -20,8 +20,8 @@ declare let Phaser: any;
 export class DemoAquariumComponent implements OnInit {
 
   game;
-  pickedGame;
-  totalPoints;
+  pickedGame ;
+  totalPoints = 0;
 
   constructor(private router: Router, 
     //private pickGameService: PickGameService,
@@ -66,7 +66,7 @@ export class DemoAquariumComponent implements OnInit {
     this.game.state.add('Boot', Boot);
     var preLoader = new Preloader();
 
-    if(this.totalPoints <770 && this.totalPoints > 0){
+    if(this.totalPoints <770 && this.totalPoints >= 0){
       preLoader.setGameName(this.pickedGame = "GameSmall");
       this.game.state.add('Preloader', preLoader);
       var gameSmall = new GameSmall();
