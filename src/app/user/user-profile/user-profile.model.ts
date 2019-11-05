@@ -1,16 +1,15 @@
-import { int } from 'aws-sdk/clients/datapipeline';
 
 export class UserProfile {
     public userID : string;
     public userName: string;
     public isParent: boolean;
     public isActive: boolean;
-    public datesTaken: Date[];
-    public points: int;
+    public datesTaken: number[];
+    public points: number;
     //access token
     //refresh token 
 
-    constructor(userID: string, userName: string, isParent: boolean, datesTaken: Date[], points: int){        
+    constructor(userID: string, userName: string, isParent: boolean, datesTaken: number[], points: number){        
         this.userID = userID;
         this.isParent = isParent;
         this.userName = userName;

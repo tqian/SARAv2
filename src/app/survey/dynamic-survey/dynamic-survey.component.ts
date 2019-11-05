@@ -5,6 +5,7 @@ import { EncrDecrService } from '../../storage/encrdecrservice.service';
 import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
+import { UserProfileService } from '../../user/user-profile/user-profile.service';
 
 @Component({
   selector: 'app-dynamic-survey',
@@ -65,7 +66,8 @@ export class DynamicSurveyComponent implements OnInit {
     private storeToFirebaseService: StoreToFirebaseService,
     private EncrDecr: EncrDecrService,
     private router: Router,
-    public plt: Platform) {
+    public plt: Platform,
+    private userProfileService: UserProfileService) {
   }
 
   ngOnInit() { }
@@ -122,6 +124,7 @@ export class DynamicSurveyComponent implements OnInit {
       EncrDecr: EncrDecrService;
       plt: Platform;
       router: Router;
+      userProfileService: UserProfileService;
 
       constructor() {
         //self2=this;
@@ -255,6 +258,9 @@ export class DynamicSurveyComponent implements OnInit {
         console.log('Decrypted :' + decrypted);
         this.survey2['encrypted'] = encrypted;
 
+        // this.userProfileService.surveyCompleted();
+        setInterval(() => {userProfileService: UserProfileService;this.userProfileService.surveyCompleted()},0);
+        
         this.storeToFirebaseService.addSurvey('/results',this.survey2);
 
         this.router.navigate(['incentive/sample-life-insight']);
