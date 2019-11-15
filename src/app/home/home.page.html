@@ -17,13 +17,21 @@
     <ion-button href="/incentive/visualization">Incentive: Life-inisight</ion-button> <br>
   </div-->
   <!-- <app-auth></app-auth>  -->
-  <nav class="navbar navbar-light bg-light">
+
+  
+  <app-header  ></app-header>
+
+  <!-- <div *ngIf="isAuthenticated">
+  <nav class="navbar navbar-light bg-light" >
     <span class="navbar-brand" [textContent]="userName" ></span>
     <ion-buttons slot="end">
       <ion-button (click)="changeUserName()">Test functionality</ion-button> 
   </ion-buttons>
     <span> <a style="cursor: pointer;" (click)="logout()">logout</a></span>
   </nav>
-  <app-demo-aquarium></app-demo-aquarium>
+</div> -->
+
+  <app-auth *ngIf="!isAuthenticated">  </app-auth>
+  <app-demo-aquarium *ngIf="isAuthenticated"></app-demo-aquarium>
 </ion-content>
 

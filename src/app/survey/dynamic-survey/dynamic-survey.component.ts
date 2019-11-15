@@ -6,11 +6,14 @@ import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { UserProfileService } from '../../user/user-profile/user-profile.service';
+import { UserProfile } from '../../user/user-profile/user-profile.model';
+
 
 @Component({
   selector: 'app-dynamic-survey',
   templateUrl: './dynamic-survey.component.html',
   styleUrls: ['./dynamic-survey.component.scss'],
+  providers: [UserProfileService],
 })
 
 export class DynamicSurveyComponent implements OnInit {
@@ -124,6 +127,7 @@ export class DynamicSurveyComponent implements OnInit {
       EncrDecr: EncrDecrService;
       plt: Platform;
       router: Router;
+      userProfile: UserProfile;
       userProfileService: UserProfileService;
 
       constructor() {
@@ -258,8 +262,8 @@ export class DynamicSurveyComponent implements OnInit {
         console.log('Decrypted :' + decrypted);
         this.survey2['encrypted'] = encrypted;
 
-        // this.userProfileService.surveyCompleted();
-        setInterval(() => {userProfileService: UserProfileService;this.userProfileService.surveyCompleted()},0);
+        this.userProfileService.surveyCompleted();
+        // setInterval(() => {userProfileService: UserProfileService;this.userProfileService.surveyCompleted()},0);
         
         this.storeToFirebaseService.addSurvey('/results',this.survey2);
 
@@ -286,6 +290,7 @@ export class DynamicSurveyComponent implements OnInit {
         const f = factories.componentFactories[0];
         const cmpRef = this.vc.createComponent(f);
         cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
+        cmpRef.instance.userProfileService = this.userProfileService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
         cmpRef.instance.plt = this.plt;
         cmpRef.instance.router = this.router;// Router,

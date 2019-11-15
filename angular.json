@@ -31,16 +31,17 @@
                 "output": "./svg"
               }
             ],
-            "styles": [
+            "styles": [              
               {
                 "input": "src/theme/variables.scss"
               },
               {
                 "input": "src/global.scss"
-              }
+              },
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
             "scripts": [
-              
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
             "es5BrowserSupport": true
           },
@@ -69,6 +70,14 @@
                 }
               ]
             },
+            "dev":{
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
+            },
             "ci": {
               "progress": false
             }
@@ -82,6 +91,9 @@
           "configurations": {
             "production": {
               "browserTarget": "app:build:production"
+            },
+            "dev": {
+              "browserTarget": "app:build:dev"
             },
             "ci": {
               "progress": false
@@ -151,6 +163,10 @@
             "production": {
               "cordovaBuildTarget": "app:ionic-cordova-build:production",
               "devServerTarget": "app:serve:production"
+            },
+            "dev": {
+              "cordovaBuildTarget": "app:ionic-cordova-build:production",
+              "devServerTarget": "app:serve:dev"
             }
           }
         }

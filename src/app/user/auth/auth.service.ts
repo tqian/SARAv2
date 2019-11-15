@@ -1,113 +1,77 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { throwError, Subject, BehaviorSubject, Observable } from 'rxjs';
+import { throwError, Subject, BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { User } from './user.model';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { environment } from 'src/environments/environment';
 
 export interface AuthResponseData{
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
+  access_token: string;
+  refresh_token: string;
+  access_expires: string;
+  refresh_expires: string;
   registered? : boolean;
 }
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-//OLD
-  user = new BehaviorSubject<User>(null);
+  //new
+  loggedInUser =  new BehaviorSubject<string>(localStorage.getItem('loggedInUser')); //localStorage.getItem('loggedInUser') 
+
+  userSub:Subscription = this.loggedInUser.subscribe(loggedInUser => {
+    if(loggedInUser === null){
+      localStorage.removeItem('loggedInUser');
+    }
+    else{
+      localStorage.setItem('loggedInUser', loggedInUser);
+    }
+  });
+
+  private readonly ACCESS_TOKEN = 'ACCESS_TOKEN';
+  private readonly ACCESS_TOKEN_EXPIRATION = 'ACCESS_TOKEN_EXPIRATION';
+  private readonly REFRESH_TOKEN = 'REFRESH_TOKEN';
+  private readonly REFRESH_TOKEN_EXPIRATION = 'REFRESH_TOKEN_EXPIRATION';
+
   private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient,
               private router: Router) { }
 
-
-  //FB APPROACH
-  // user: Observable<firebase.User>;
-  // constructor(private firebaseAuth: AngularFireAuth,private router: Router) {
-  //   this.user = firebaseAuth.authState;
-  // }
-
-              // signup(email: string, password: string) {
-              //   this.firebaseAuth
-              //     .auth
-              //     .createUserWithEmailAndPassword(email, password)
-              //     .then(value => {
-              //       console.log('Success!', value);
-              //     })
-              //     .catch(err => {
-              //       console.log('Something went wrong:',err.message);
-              //     });    
-              // }
-            
-              // login(email: string, password: string) {
-              //   this.firebaseAuth
-              //     .auth
-              //     .signInWithEmailAndPassword(email, password)
-              //     .then(value => {
-              //       console.log('Nice, it worked!');
-              //       this.router.navigate(['/home']);
-              //     })
-              //     .catch(err => {
-              //       console.log('Something went wrong:',err.message);
-              //     });
-              // }
-            
-              // logout() {
-              //   this.firebaseAuth
-              //     .auth
-              //     .signOut();
-              // }
-
-              
-
-
-  signup(email: string, password: string){
+  signup(userName: string, password: string){
     return this.http
-    .post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDtiV-JpDG14wIkPsPx4v40Dgx4SQRq3Cs',
+    .post<AuthResponseData>(environment.userServer,
     {
-      email: email,
-      password: password,
-      returnSecureToken: true
+      userName: userName,
+      password: password
     }).pipe(catchError(this.handleError),tap(resData => {
-      this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+      this.loggedInUser.next(userName);
+      this.storeAccessToken(resData.access_token, resData.access_expires);
+      this.storeRefreshToken(resData.refresh_token, resData.refresh_expires);
     }));
   }
 
   autoLogin(){
-    const userData : {
-      email: string,
-      id: string,
-      _token: string,
-      _tokenExpirationDate: string
-    }= JSON.parse(localStorage.getItem('userData'));
-    if(!userData){
+
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if(loggedInUser===null){
       return;
     }
-    const loadedUser = new User(userData.email,userData.id, userData._token, new Date(userData._tokenExpirationDate));
-    if(loadedUser.getToken()){
-      this.user.next(loadedUser);
-      const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-
-      this.autoLogout(expirationDuration);
+    else{
+      this.loggedInUser.next(loggedInUser);
     }
   }
 
   logout(){
-    this.user.next(null);
-    this.router.navigate(['/auth']);
-    localStorage.removeItem('userData');
-    if(this.tokenExpirationTimer){
-      clearTimeout(this.tokenExpirationTimer);
-    }
-    this.tokenExpirationTimer = null;
+    this.loggedInUser.next(null);
+    this.router.navigate(['/home']);
+    localStorage.removeItem('loggedInUser');
+    this.removeTokens();
   }
 
+  //may not need 
   autoLogout(expirationDuration: number){
     console.log(expirationDuration);
     this.tokenExpirationTimer= setTimeout(() => {
@@ -115,31 +79,22 @@ export class AuthService {
     },expirationDuration);
   }
 
-  login(email: string, password: string){
+  login(userName: string, password: string){
     return this.http
-    .post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDM8d1yG2rNPc8AotB0NoN3Q2wMq4HDooo',
+    .post<AuthResponseData>(environment.userServer+'/login',
     {
-      email: email,
-      password: password,
-      returnSecureToken: true
+      username: userName,
+      password: password
     }).pipe(catchError(this.handleError),tap(resData => {
-      this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+
+      this.loggedInUser.next(userName);
+      this.storeAccessToken(resData.access_token, resData.access_token);
+      this.storeRefreshToken(resData.refresh_token, resData.refresh_expires);
+      
+      console.log("loggedInUser: " +  this.loggedInUser.getValue());
+      console.log("resData: " + JSON.stringify(resData));
     }));
   }
-
-
-  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number){
-    const expirationData = new Date(new Date().getTime() + expiresIn * 1000);
-    const user = new User(
-      email,
-      userId,
-      token,
-      expirationData);
-    this.user.next(user);
-    this.autoLogout(expiresIn * 1000);
-    localStorage.setItem('userData', JSON.stringify(user));
-  }
-
 
   private handleError(errorRes: HttpErrorResponse){
       let errorMessage = 'An unknown error occurred!';
@@ -160,5 +115,66 @@ export class AuthService {
       }
       return throwError(errorMessage);
   }
+
+  refreshToken() {
+    const token = this.getRefreshToken();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+
+    return this.http.post<any>(`${environment.userServer}/token/refresh`, {
+      'refreshToken': this.getRefreshToken(), httpOptions
+    }).pipe(tap((
+        resData: {
+          "access_token": string, 
+          "access_expires": string}) => {
+      this.storeAccessToken(resData.access_token, resData.access_expires);
+    }));
+  }
+
+  // private removeUser(){
+  //   localStorage.removeItem('user');
+  // }
+
+isLoggedIn() {
+  return !!this.loggedInUser.getValue();
+}
+
+getAccessToken() {
+  return localStorage.getItem(this.ACCESS_TOKEN);
+}
+
+private doLogoutUser() {
+  this.loggedInUser = null;
+  this.removeTokens();
+}
+
+private getRefreshToken() {
+  return localStorage.getItem(this.REFRESH_TOKEN);
+}
+
+private storeAccessToken(token: string, expires: string) {
+  localStorage.setItem(this.ACCESS_TOKEN, token);
+  
+  const expirationDate = new Date(new Date().getTime() + +expires * 1000);
+  localStorage.ACCESS_TOKEN_EXPIRATION = expirationDate;
+}
+
+private storeRefreshToken(token: string, expires: string) {
+  localStorage.setItem(this.REFRESH_TOKEN, token);
+  const expirationDate = new Date(new Date().getTime() + +expires * 1000);
+  localStorage.REFRESH_TOKEN_EXPIRATION = expirationDate;
+}
+
+private removeTokens() {
+  localStorage.removeItem(this.ACCESS_TOKEN);
+  localStorage.removeItem(this.ACCESS_TOKEN_EXPIRATION);
+  localStorage.removeItem(this.REFRESH_TOKEN);
+  localStorage.removeItem(this.REFRESH_TOKEN_EXPIRATION);
+
+}
+
 
 }

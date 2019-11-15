@@ -1,14 +1,28 @@
 export class User{
   constructor(
-    public email: string,
-    public id: string,
-    private _token: string,
-    private _tokenExpirationDate: Date){}
+    public userName: string,
+    private _accessToken: string,
+    private _refreshToken: string ,
+    private _accessTokenExpirationDate: Date,
+    private _refreshTokenExpirationDate: Date){}
 
-    getToken(){
-      if(!this._tokenExpirationDate || new Date() > this._tokenExpirationDate){
+    setAccessToken(token: string, expirationDate: Date){
+      this._accessToken = token;
+      this._accessTokenExpirationDate = expirationDate;
+    }
+
+    getAccessToken(){
+      if(!this._accessTokenExpirationDate || new Date() > this._accessTokenExpirationDate){
         return null;
       }
-      return this._token;
+      return this._accessToken;
+    }
+
+
+    getRefreshToken(){
+      if(!this._refreshTokenExpirationDate || new Date() > this._refreshTokenExpirationDate){
+        return null;
+      }
+      return this._refreshToken;
     }
 }

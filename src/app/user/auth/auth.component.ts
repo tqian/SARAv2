@@ -1,12 +1,13 @@
 //this component will register/login a user
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService, AuthResponseData } from './auth.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
+import { environment } from 'src/environments/environment';
 
 
 @Component({  
@@ -14,7 +15,7 @@ import { auth } from 'firebase/app';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   isLoginMode = true;
   isLoading = false;
   error: string = null;
@@ -25,20 +26,27 @@ export class AuthComponent {
     this.isLoginMode = !this.isLoginMode;
   }
 
+  ngOnInit(){
+    console.log(environment.userServer);
+  }
+
   onSubmit(form: NgForm){
 
     if(!form.valid){
+      console.log('invalid');
       return;
     }
-    const email = form.value.email;
+    const userName = form.value.userName;
     const password = form.value.password;
     let authObs: Observable<AuthResponseData>;
+    console.log("test " );
+    console.log("userName: " + userName);
 
     this.isLoading = true;
     if(this.isLoginMode){
-      authObs =  this.authService.login(email,password);
+      authObs =  this.authService.login(userName,password);
     }else{
-      authObs =  this.authService.signup(email, password);
+      authObs =  this.authService.signup(userName, password);
     }
 
     authObs.subscribe(resData => {

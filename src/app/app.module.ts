@@ -15,19 +15,22 @@ import { AppRoutingModule } from './app-routing.module';
 import { SurveyModule } from './survey/survey.module';
 import { IncentiveModule } from './incentive/incentive.module';
 import { LifeInsightsModule } from './incentive/life-insights/life-insights.module';
-
+import { UserModule } from './user/user.module';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
     BrowserModule, 
+    FormsModule,
     IonicModule.forRoot(), 
     AppRoutingModule,
     HttpClientModule,
     SurveyModule,
     IncentiveModule,
     BlobModule.forRoot(),
-    LifeInsightsModule
+    LifeInsightsModule,
+    UserModule
   ],
   providers: [
     StatusBar,

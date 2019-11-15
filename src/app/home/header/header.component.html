@@ -1,0 +1,40 @@
+<!-- 
+<div class="container">
+    <div class="row">
+        <div class="col-md-12"> -->
+
+
+            <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+                <!-- Brand -->
+                <a class="navbar-brand" href="#" *ngIf="isAuthenticated">User: <span [textContent]="userName" ></span></a>
+              
+                <ion-button (click)="onTestButtonClicked()">test</ion-button>
+                <!-- Links -->
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item" *ngIf="isAuthenticated">
+                    <a class="nav-link" (click)="onLogout()">Logout</a>
+                  </li>
+
+                  <li class="nav-item"  *ngIf="!isAuthenticated">
+                      <a class="nav-link" >Login</a>
+                     
+                  </li>
+
+
+
+              
+                  <!-- Dropdown -->
+                  <!-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                      Dropdown link
+                    </a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#">Link 1</a>
+                      <a class="dropdown-item" href="#">Link 2</a>
+                      <a class="dropdown-item" href="#">Link 3</a>
+                    </div>
+                  </li> -->
+                </ul>
+              </nav>
+
+              

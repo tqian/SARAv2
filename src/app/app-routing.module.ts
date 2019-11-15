@@ -11,9 +11,13 @@ import { DemoAquariumComponent } from './incentive/aquarium/demo-aquarium/demo-a
 import { Q1MotivatedComponent } from './incentive/life-insights/q1-motivated/q1-motivated.component';
 import { SampleSurveyComponent } from './survey/sample-survey/sample-survey.component';
 import { SampleLifeInsightsComponent } from './incentive/life-insights/sample-life-insights/sample-life-insights.component';
+import { AuthGuard } from './user/auth/auth.guard';
+import { AuthComponent } from './user/auth/auth.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  {path: 'auth', component: AuthComponent},
+  // { path: 'home', loadChildren: () => import('./home/home.module').then(m=> m.HomePageModule) },  
   { path: 'home', loadChildren: './home/home.module#HomePageModule' },
   { path: 'survey/initated-drink', component: InitiatedDrinkComponent },
   //{ path: 'survey/activetask', component: ActivetaskComponent },

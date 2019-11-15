@@ -11,7 +11,9 @@ import { UserProfileService } from '../user/user-profile/user-profile.service';
 })
 export class HomePage  implements OnInit, OnDestroy {
   isAuthenticated = false;
-  // private userSub: Subscription;
+  private userSub: Subscription;
+
+
   email: string;
   // userName: string;// = "test";
 
@@ -28,12 +30,28 @@ export class HomePage  implements OnInit, OnDestroy {
   changeUserName(){
     this.userProfileService.userName= "test29";
     // this.userProfileService.addDateTaken();
+    this.userProfileService.userProfile.badgeCount=3;
     this.userProfileService.surveyCompleted();
-
   }
 
+  // get points(){
+  //   return this.userProfileService.points()
+  // }
+
   ngOnInit(){
-    // this.authService.autoLogin();
+    this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
+      this.isAuthenticated = this.authService.isLoggedIn();
+
+      // this.isAuthenticated = !!this.authService.isLoggedIn();
+    });
+
+    // this.userSub=  this.authService.user.subscribe(user => {
+    //   this.isAuthenticated = !!user; //!user ? false : true;
+    //   console.log(!user);
+    // });
+
+    this.authService.autoLogin();
+
     if(this.userProfileService.profileIsOnDevice()){
       this.userProfileService.loadProfileFromDevice();
     }

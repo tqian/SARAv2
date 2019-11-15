@@ -9,31 +9,37 @@ import { Level1Small } from '../fishgame/Level1Small';
 import { FormsModule } from '@angular/forms';
 //import { PickGameService } from './pick-game.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserProfileService } from 'src/app/user/user-profile/user-profile.service';
 
 declare let Phaser: any;
 
 @Component({
   selector: 'app-demo-aquarium',
   templateUrl: './demo-aquarium.component.html',
-  styleUrls: ['./demo-aquarium.component.scss'],
+  styleUrls: ['./demo-aquarium.component.scss']
 })
 export class DemoAquariumComponent implements OnInit {
 
   game;
   pickedGame ;
-  totalPoints = 0;
+  // totalPoints = 0;
+  get totalPoints(){
+    return this.userProfileService.points;
+  }
 
   constructor(private router: Router, 
     //private pickGameService: PickGameService,
-    private route: ActivatedRoute) { 
+    private route: ActivatedRoute,
+    private userProfileService: UserProfileService) { 
     console.log("Constructor called");
-    
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.totalPoints = this.router.getCurrentNavigation().extras.state.totalPoints;
-        console.log("Pass totalPoints: "+this.totalPoints);
-      }
-    });
+
+    //temporarily commenting out 
+    // this.route.queryParams.subscribe(params => {
+    //   if (this.router.getCurrentNavigation().extras.state) {
+    //     this.totalPoints = this.router.getCurrentNavigation().extras.state.totalPoints;
+    //     console.log("Pass totalPoints: "+this.totalPoints);
+    //   }
+    // });
   }
 
 

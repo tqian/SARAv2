@@ -8,6 +8,10 @@ import { AuthService } from './auth/auth.service';
 import { environment } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { UserProfileService } from './user-profile/user-profile.service';
+import { UserProfile } from './user-profile/user-profile.model';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './auth/token.interceptor';
 
 @NgModule({
   declarations: [AuthComponent],
@@ -19,7 +23,16 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AngularFireAuthModule
   ],
   exports: [AuthComponent],
-  providers: [AuthService],
+  providers: [AuthService, UserProfileService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
+    // , UserProfile
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class UserModule { }
+
+export { UserProfile } from './user-profile/user-profile.model';

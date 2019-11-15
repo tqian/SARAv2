@@ -8,6 +8,7 @@ import {UserModule} from '../user/user.module';
 
 import { HomePage } from './home.page';
 import { fork } from 'child_process';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   imports: [
@@ -23,6 +24,6 @@ import { fork } from 'child_process';
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [HomePage, HeaderComponent]
 })
 export class HomePageModule {}
