@@ -1,1 +1,7 @@
 node_modules/
+www/
+plugins/
+src/assets/data/data1.json
+platforms/
+package-lock.json
+src/environments/environment.ts
