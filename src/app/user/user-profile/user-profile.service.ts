@@ -24,7 +24,7 @@ export class UserProfileService {
     //console.log('pre-http call');
 
     this.http
-      .post(environment.userServer+'/setuserinfo',profileObj)
+      .post(environment.userServer+'/setuserinfo',userProfile)
       .subscribe(response =>{
         console.log(response);
       });

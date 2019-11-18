@@ -12,11 +12,6 @@ import { UserProfileService } from '../user/user-profile/user-profile.service';
 export class HomePage  implements OnInit, OnDestroy {
   isAuthenticated = false;
   private userSub: Subscription;
-
-
-  email: string;
-  // userName: string;// = "test";
-
   
   constructor( 
     private authService: AuthService, 
@@ -27,6 +22,7 @@ export class HomePage  implements OnInit, OnDestroy {
     return this.userProfileService.userName;
   }
   
+  //testing button
   changeUserName(){
     this.userProfileService.userName= "test29";
     // this.userProfileService.addDateTaken();
@@ -34,21 +30,12 @@ export class HomePage  implements OnInit, OnDestroy {
     this.userProfileService.surveyCompleted();
   }
 
-  // get points(){
-  //   return this.userProfileService.points()
-  // }
+
 
   ngOnInit(){
     this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
       this.isAuthenticated = this.authService.isLoggedIn();
-
-      // this.isAuthenticated = !!this.authService.isLoggedIn();
     });
-
-    // this.userSub=  this.authService.user.subscribe(user => {
-    //   this.isAuthenticated = !!user; //!user ? false : true;
-    //   console.log(!user);
-    // });
 
     this.authService.autoLogin();
 
@@ -59,28 +46,11 @@ export class HomePage  implements OnInit, OnDestroy {
       this.userProfileService.initTestProfile();
     }
 
-    // this.userSub=  this.authService.user.subscribe(user => {
-    //   this.isAuthenticated = !!user; //!user ? false : true;
-    //   console.log('no user: ' + !user);
-    // });
 
-
-    // const userData : {
-    //   email: string,
-    //   id: string,
-    //   _token: string,
-    //   _tokenExpirationDate: string
-    // }= JSON.parse(localStorage.getItem('userData'));
-
-    // console.log(userData);
-    // this.email = userData.email;
-
-    // console.log(this.authService.user.getValue());
-    // const userProfile: UserProfile =  new UserProfile(userData.id, userData.email, false, null,0);  
   }
 
   ngOnDestroy(){
-    // this.userSub.unsubscribe();
+    this.userSub.unsubscribe();
   }
 
   logout(){
