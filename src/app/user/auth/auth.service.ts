@@ -125,12 +125,12 @@ export class AuthService {
     };
 
     return this.http.post<any>(`${environment.userServer}/token/refresh`, {
-      'refreshToken': this.getRefreshToken(), httpOptions
-    }).pipe(tap((
+      'refreshToken': this.getRefreshToken() 
+    },httpOptions ).pipe(tap((
         resData: {
           "access_token": string, 
           "access_expires": string}) => {
-      this.storeAccessToken(resData.access_token, resData.access_expires);
+        this.storeAccessToken(resData.access_token, resData.access_expires);
     }));
   }
 
