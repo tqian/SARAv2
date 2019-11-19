@@ -5,10 +5,11 @@ import { AwardComponent } from './award/award.component';
 import { AwardMemesComponent } from './award-memes/award-memes.component';
 //import { VisualizationComponent } from './visualization/visualization.component';
 import { DemoAquariumComponent } from './aquarium/demo-aquarium/demo-aquarium.component';
+import { DemoReinforestComponent } from './aquarium/demo-reinforest/demo-reinforest.component';
 
 
 @NgModule({
-  declarations: [AwardComponent, AwardMemesComponent, DemoAquariumComponent],
+  declarations: [AwardComponent, AwardMemesComponent, DemoAquariumComponent, DemoReinforestComponent],
   imports: [
     CommonModule,
     IonicModule.forRoot()

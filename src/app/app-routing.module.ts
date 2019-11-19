@@ -10,6 +10,7 @@ import { DynamicSurveyComponent } from './survey/dynamic-survey/dynamic-survey.c
 import { DemoAquariumComponent } from './incentive/aquarium/demo-aquarium/demo-aquarium.component';
 import { SampleSurveyComponent } from './survey/sample-survey/sample-survey.component';
 import { Q1MotivatedComponent } from './incentive/life-insights/q1-motivated/q1-motivated.component';
+import { DemoReinforestComponent } from './incentive/aquarium/demo-reinforest/demo-reinforest.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'survey/dynamicsurvey', component: DynamicSurveyComponent }, 
   { path: 'survey/samplesurvey', component: SampleSurveyComponent }, 
   { path: 'incentive/aquariumone', component: DemoAquariumComponent }, 
+  { path: 'incentive/reinforestone', component: DemoReinforestComponent }, 
   { path: 'life-insight/q1lifeinsight', component: Q1MotivatedComponent } 
 ];
 
