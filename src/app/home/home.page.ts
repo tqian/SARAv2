@@ -35,12 +35,13 @@ export class HomePage  implements OnInit, OnDestroy {
     });
 
 
-    if(this.userProfileService.profileIsOnDevice()){
-      this.userProfileService.loadProfileFromDevice();
-    }
-    else{
-      this.userProfileService.initTestProfile();
-    }
+    // if(this.userProfileService.profileIsOnDevice()){
+    //   this.userProfileService.loadProfileFromDevice();
+    // }
+    // else{
+    //   this.userProfileService.initTestProfile();
+    // }
+
   }
 
   ngOnDestroy(){

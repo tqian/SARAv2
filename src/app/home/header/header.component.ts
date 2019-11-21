@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit, OnDestroy  {
   
   onTestButtonClicked(){
     this.userProfileService.initialize();
-//    this.userProfileService.saveToServer();
+    this.userProfileService.saveToServer();
     }
 
     onLogout(){
@@ -29,11 +29,13 @@ export class HeaderComponent implements OnInit, OnDestroy  {
     ngOnInit(){
       this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
         this.isAuthenticated = this.authService.isLoggedIn();
+        if(this.isAuthenticated){
+          this.userProfileService.initialize();
+        }
         // this.isAuthenticated = !!loggedInUser; //!user ? false : true;
         console.log(!loggedInUser);
       });
       this.authService.autoLogin();
-      this.userProfileService.initialize();
     }
 
     ngOnDestroy(){
