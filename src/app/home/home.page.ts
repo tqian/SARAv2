@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../user/auth/auth.service';
 import { Subscription } from 'rxjs';
-import { UserProfile } from '../user/user-profile/user-profile.model';
 import { UserProfileService } from '../user/user-profile/user-profile.service';
 
 @Component({
@@ -18,26 +17,23 @@ export class HomePage  implements OnInit, OnDestroy {
     private userProfileService: UserProfileService ){
   }
 
-  get userName(){
-    return this.userProfileService.userName;
-  }
+  // get userName(){
+  //   return this.userProfileService.userName;
+  // }
   
-  //testing button
-  changeUserName(){
-    this.userProfileService.userName= "test29";
-    // this.userProfileService.addDateTaken();
-    this.userProfileService.userProfile.badgeCount=3;
-    this.userProfileService.surveyCompleted();
-  }
-
-
+  // //testing button
+  // changeUserName(){
+  //   this.userProfileService.userName= "test29";
+  //   // this.userProfileService.addDateTaken();
+  //   this.userProfileService.userProfile.badgeCount=3;
+  //   this.userProfileService.surveyCompleted();
+  // }
 
   ngOnInit(){
     this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
       this.isAuthenticated = this.authService.isLoggedIn();
     });
 
-    this.authService.autoLogin();
 
     if(this.userProfileService.profileIsOnDevice()){
       this.userProfileService.loadProfileFromDevice();
@@ -45,15 +41,13 @@ export class HomePage  implements OnInit, OnDestroy {
     else{
       this.userProfileService.initTestProfile();
     }
-
-
   }
 
   ngOnDestroy(){
     this.userSub.unsubscribe();
   }
 
-  logout(){
-    this.authService.logout();
-  }
+  // logout(){
+  //   this.authService.logout();
+  // }
 }

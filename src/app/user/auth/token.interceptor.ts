@@ -13,11 +13,10 @@ export class TokenInterceptor implements HttpInterceptor {
 
   constructor(public authService: AuthService) { }
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {    
     if (this.authService.loggedInUser.getValue()) {
       //if it's a refresh request, don't overwrite the token since it was already added
-      if(request.url.indexOf('refresh')===0){
+      if(request.url.indexOf('refresh')<0){
         request = this.addToken(request, this.authService.getAccessToken());        
       }
     }

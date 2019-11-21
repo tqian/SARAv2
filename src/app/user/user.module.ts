@@ -23,7 +23,7 @@ import { TokenInterceptor } from './auth/token.interceptor';
     AngularFireAuthModule
   ],
   exports: [AuthComponent],
-  providers: [AuthService, UserProfileService,
+  providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

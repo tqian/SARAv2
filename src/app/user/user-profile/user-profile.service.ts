@@ -3,6 +3,7 @@ import { UserProfile } from './user-profile.model';
 import { HttpClient } from '@angular/common/http';
 import * as firebase from 'firebase';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +12,34 @@ export class UserProfileService {
   userProfile: UserProfile;
   me = this;
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
+  initialize(){
+    //get profile from server
+    // this.userProfile
+    this.http
+      .post<any>(environment.userServer+'/userinfo',{"empty":"empty"})
+      .subscribe(response =>{
+        console.log("response: "+  response.userName);
+        if (!response.userName){
+          console.log("blank or empty user_name");
+          this.userProfile = new UserProfile("1", this.authService.loggedInUser.getValue(),false,[],0,0);
+
+        }
+        else{
+          this.userProfile = response;
+        }
+        this.saveProfileToDevice();
+      });
+
+  }
 
 
   saveToServer(){ 
     this.loadProfileFromDevice(); 
     const userProfile: UserProfile = this.userProfile;
-    const userID = 'dog';//userProfile.userID;
-    const profileObj = {userID: userProfile}
+    // const userID = 'dog';//userProfile.userID;
+    // const profileObj = {userID: userProfile}
     //const recipes = this.recipeServices.getRecipes();
     //console.log('pre-http call');
 
@@ -73,9 +93,10 @@ export class UserProfileService {
   }
 
   public surveyCompleted(){
-    if(!this.surveyTakenForCurrentDay()){
+    if(!this.surveyTakenForCurrentDay()|| this.authService.loggedInUser.getValue().indexOf('admin')>=0){
       this.addDateTaken();
       this.addSurveyPoints();
+      this.saveToServer();
     }
   }
 
@@ -116,6 +137,12 @@ export class UserProfileService {
   addPoints(points: number){
     this.userProfile.points += points;
     this.saveProfileToDevice();
+    this.saveToServer();
+
+  }
+
+  removeUserProfile(){
+    localStorage.removeItem('userProfile');
   }
 
 //methods - to be recreated

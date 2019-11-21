@@ -6,6 +6,7 @@ import { User } from './user.model';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { environment } from 'src/environments/environment';
+import { UserProfileService } from '../user-profile/user-profile.service';
 
 export interface AuthResponseData{
   access_token: string;
@@ -24,6 +25,7 @@ export class AuthService {
   userSub:Subscription = this.loggedInUser.subscribe(loggedInUser => {
     if(loggedInUser === null){
       localStorage.removeItem('loggedInUser');
+      localStorage.removeItem('userProfile');
     }
     else{
       localStorage.setItem('loggedInUser', loggedInUser);
@@ -42,14 +44,16 @@ export class AuthService {
 
   signup(userName: string, password: string){
     return this.http
-    .post<AuthResponseData>(environment.userServer,
+    .post<AuthResponseData>(environment.userServer+'/registration',
     {
-      userName: userName,
+      username: userName,
       password: password
     }).pipe(catchError(this.handleError),tap(resData => {
       this.loggedInUser.next(userName);
       this.storeAccessToken(resData.access_token, resData.access_expires);
       this.storeRefreshToken(resData.refresh_token, resData.refresh_expires);
+
+      console.log("resData: " + JSON.stringify(resData));
     }));
   }
 
