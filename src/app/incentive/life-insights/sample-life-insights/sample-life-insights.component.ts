@@ -70,6 +70,7 @@ export class SampleLifeInsightsComponent implements OnInit {
   init(index: number){
     //console.log(this.inputStr);
     //this.jsonObj = JSON.parse(this.inputStr);
+    this.index = Math.floor(Math.random() * lifeInsightProfile.questions.length);    
     this.question = lifeInsightProfile.questions[this.index]; 
     this.imgloc = lifeInsightProfile.qimgs[this.index];
     this.title = lifeInsightProfile.lifeInsightsTitle[this.index];
@@ -183,13 +184,13 @@ export class SampleLifeInsightsComponent implements OnInit {
     });
   }
 
-  onChangeCategorySelect(){
+  /*onChangeCategorySelect(){
     console.log("onChangeCategorySelect: "+this.selectedValue);
     this.index =  this.qYaxisArray.indexOf(this.selectedValue);
     this.init(this.index);   
 
     this.ga.trackEvent('Select category for Life-insight', 'OnChange Action', 'Switch to display '+this.selectedValue, 0);
 
-  }
+  }*/
 
 }
