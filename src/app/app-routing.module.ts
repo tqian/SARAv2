@@ -15,21 +15,21 @@ import { AuthGuard } from './user/auth/auth.guard';
 import { AuthComponent } from './user/auth/auth.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' , canActivate: [AuthGuard]},
   {path: 'auth', component: AuthComponent},
   // { path: 'home', loadChildren: () => import('./home/home.module').then(m=> m.HomePageModule) },  
-  { path: 'home', loadChildren: './home/home.module#HomePageModule' },
-  { path: 'survey/initated-drink', component: InitiatedDrinkComponent },
+  { path: 'home', loadChildren: './home/home.module#HomePageModule'  , canActivate: [AuthGuard]},
+  { path: 'survey/initated-drink', component: InitiatedDrinkComponent , canActivate: [AuthGuard] },
   //{ path: 'survey/activetask', component: ActivetaskComponent },
-  { path: 'survey/activetask2', component: ActiveTask2Component },
-  { path: 'survey/dynamicsurvey', component: DynamicSurveyComponent }, 
-  { path: 'survey/samplesurvey', component: SampleSurveyComponent }, 
-  { path: 'incentive/award', component: AwardComponent },
-  { path: 'incentive/award-memes', component: AwardMemesComponent },
-  { path: 'incentive/visualization', component: VisualizationComponent},
-  { path: 'incentive/aquariumone', component: DemoAquariumComponent },  
-  { path: 'life-insight/q1lifeinsight', component: Q1MotivatedComponent },
-  { path: 'incentive/sample-life-insight', component: SampleLifeInsightsComponent } 
+  { path: 'survey/activetask2', component: ActiveTask2Component , canActivate: [AuthGuard] },
+  { path: 'survey/dynamicsurvey', component: DynamicSurveyComponent , canActivate: [AuthGuard] }, 
+  { path: 'survey/samplesurvey', component: SampleSurveyComponent  , canActivate: [AuthGuard]}, 
+  { path: 'incentive/award', component: AwardComponent , canActivate: [AuthGuard] },
+  { path: 'incentive/award-memes', component: AwardMemesComponent , canActivate: [AuthGuard] },
+  { path: 'incentive/visualization', component: VisualizationComponent , canActivate: [AuthGuard]},
+  { path: 'incentive/aquariumone', component: DemoAquariumComponent , canActivate: [AuthGuard] },  
+  { path: 'life-insight/q1lifeinsight', component: Q1MotivatedComponent , canActivate: [AuthGuard] },
+  { path: 'incentive/sample-life-insight', component: SampleLifeInsightsComponent , canActivate: [AuthGuard] } 
 
 ];
 
