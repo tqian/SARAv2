@@ -267,7 +267,9 @@ export class DynamicSurveyComponent implements OnInit {
         
         this.storeToFirebaseService.addSurvey('/results',this.survey2);
 
-        this.router.navigate(['incentive/sample-life-insight']);
+        // this.router.navigate(['incentive/sample-life-insight']);
+        this.router.navigate(['home']);
+
         
         //save to Amazon AWS S3
         //this.awsS3Service.upload(this.question.getData());
