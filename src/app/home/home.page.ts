@@ -11,36 +11,21 @@ import { UserProfileService } from '../user/user-profile/user-profile.service';
 export class HomePage  implements OnInit, OnDestroy {
   isAuthenticated = false;
   private userSub: Subscription;
-  
+
+
   constructor( 
     private authService: AuthService, 
-    private userProfileService: UserProfileService ){
-  }
+    private userProfileService: UserProfileService){
 
-  // get userName(){
-  //   return this.userProfileService.userName;
-  // }
-  
-  // //testing button
-  // changeUserName(){
-  //   this.userProfileService.userName= "test29";
-  //   // this.userProfileService.addDateTaken();
-  //   this.userProfileService.userProfile.badgeCount=3;
-  //   this.userProfileService.surveyCompleted();
-  // }
+  }
 
   ngOnInit(){
     this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
       this.isAuthenticated = this.authService.isLoggedIn();
+      if(this.isAuthenticated){
+        this.userProfileService.initialize();
+      }
     });
-
-
-    // if(this.userProfileService.profileIsOnDevice()){
-    //   this.userProfileService.loadProfileFromDevice();
-    // }
-    // else{
-    //   this.userProfileService.initTestProfile();
-    // }
 
   }
 
@@ -48,7 +33,4 @@ export class HomePage  implements OnInit, OnDestroy {
     this.userSub.unsubscribe();
   }
 
-  // logout(){
-  //   this.authService.logout();
-  // }
 }

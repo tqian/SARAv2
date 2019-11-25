@@ -26,10 +26,15 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(){
-    // this.authService.autoLogin();
   }
 
   initializeApp() {
+    this.authService.autoLogin();
+    if(this.authService.isLoggedIn()){
+      this.userProfileService.initialize();
+    }
+
+
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

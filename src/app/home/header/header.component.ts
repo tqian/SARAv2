@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from 'src/app/user/auth/auth.service';
 import { Subscription } from 'rxjs';
-import { UserProfileService } from 'src/app/user/user-profile/user-profile.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -14,25 +14,22 @@ export class HeaderComponent implements OnInit, OnDestroy  {
   collapsed = true;
 
   constructor(private authService: AuthService, 
-              private userProfileService : UserProfileService) { }
+              private router: Router) { }
    
   
-  onTestButtonClicked(){
-    this.userProfileService.initialize();
-    this.userProfileService.saveToServer();
-    }
+  // onTestButtonClicked(){
+  //   this.userProfileService.initialize();
+  //   this.userProfileService.saveToServer();
+  //   }
 
     onLogout(){
       this.authService.logout();
+      this.router.navigate(['/auth']);
     }
 
     ngOnInit(){
       this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
         this.isAuthenticated = this.authService.isLoggedIn();
-        if(this.isAuthenticated){
-          this.userProfileService.initialize();
-        }
-        // this.isAuthenticated = !!loggedInUser; //!user ? false : true;
         console.log(!loggedInUser);
       });
       this.authService.autoLogin();

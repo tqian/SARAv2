@@ -3,7 +3,7 @@ import { UserProfile } from './user-profile.model';
 import { HttpClient } from '@angular/common/http';
 import * as firebase from 'firebase';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../auth/auth.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +11,13 @@ import { AuthService } from '../auth/auth.service';
 export class UserProfileService {
   userProfile: UserProfile;
   me = this;
-  
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  initialLoading =  new BehaviorSubject<boolean>(true);
 
+  constructor(private http: HttpClient) { }
+
+
+
+ 
   initialize(){
     //get profile from server
     // this.userProfile
@@ -23,13 +27,14 @@ export class UserProfileService {
         console.log("response: "+  response.userName);
         if (!response.userName){
           console.log("blank or empty user_name");
-          this.userProfile = new UserProfile("1", this.authService.loggedInUser.getValue(),false,[],0,0);
-
+          const username = localStorage.getItem('loggedInUser');
+          this.userProfile = new UserProfile("1", username,false,[],0,0);
         }
         else{
           this.userProfile = response;
         }
         this.saveProfileToDevice();
+        this.initialLoading.next(false);
       });
 
   }
@@ -93,7 +98,8 @@ export class UserProfileService {
   }
 
   public surveyCompleted(){
-    if(!this.surveyTakenForCurrentDay()|| this.authService.loggedInUser.getValue().indexOf('admin')>=0){
+    const username = localStorage.getItem('loggedInUser'); //this.authService.loggedInUser.getValue()
+    if(!this.surveyTakenForCurrentDay()|| username.indexOf('admin')>=0){
       this.addDateTaken();
       this.addSurveyPoints();
       this.saveToServer();
@@ -138,7 +144,6 @@ export class UserProfileService {
     this.userProfile.points += points;
     this.saveProfileToDevice();
     this.saveToServer();
-
   }
 
   removeUserProfile(){

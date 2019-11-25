@@ -12,15 +12,17 @@ import { UserProfileService } from './user-profile/user-profile.service';
 import { UserProfile } from './user-profile/user-profile.model';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/token.interceptor';
+import { LoadingSpinnerComponent } from './auth/loading-spinner/loading-spinner.component';
 
 @NgModule({
-  declarations: [AuthComponent],
+  declarations: [AuthComponent, LoadingSpinnerComponent],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule
+    
   ],
   exports: [AuthComponent],
   providers: [

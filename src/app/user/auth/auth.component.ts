@@ -3,12 +3,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService, AuthResponseData } from './auth.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
 import { environment } from 'src/environments/environment';
-
+import { UserProfileService } from '../user-profile/user-profile.service';
 
 @Component({  
   selector: 'app-auth',
@@ -20,7 +18,9 @@ export class AuthComponent implements OnInit {
   isLoading = false;
   error: string = null;
 
-  constructor(private authService: AuthService, private router: Router){}
+  constructor(private authService: AuthService, 
+    private router: Router,
+    private userProfileService: UserProfileService){}
 
   onSwitchMode(){
     this.isLoginMode = !this.isLoginMode;
@@ -50,9 +50,18 @@ export class AuthComponent implements OnInit {
     }
 
     authObs.subscribe(resData => {
+      this.userProfileService.initialize();
+
+      let userSub2:Subscription = this.userProfileService.initialLoading.subscribe(initialLoading =>{
+        if(initialLoading ===false){
+          this.isLoading = false;
+          console.log("userProfile at auth: " + JSON.stringify( this.userProfileService.userProfile));
+          console.log("userProfile at auth: " + this.userProfileService.userProfile.points);          // console.log("points at auth: " + this.userProfileService.userProfile.points)
+          // this.router.navigate(['/']);
+          this.router.navigateByUrl('/home');
+        }});        
+
       console.log(resData);
-      this.isLoading = false;
-      this.router.navigate(['/home']);
     }, errorMessage=> {
       console.log(errorMessage);
       this.error = errorMessage;
