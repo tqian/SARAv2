@@ -275,6 +275,13 @@ export class DynamicSurveyComponent implements OnInit {
         //this.awsS3Service.upload(this.question.getData());
         //console.log("End of storeData");
     
+        if(Math.random() > 0.5 ){
+          this.router.navigate(['incentive/award-memes']);
+       } else {
+          //this.router.navigate(['incentive/aquarium/aquariumone']);         
+          this.router.navigate(['home']);
+       }   
+        
         //save to azure 
         //this.azureService.upload(this.question.getData());
     
