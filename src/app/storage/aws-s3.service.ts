@@ -1,15 +1,25 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
+import { StoreBaseService } from './storage-base.service';
+import { NetworkService, ConnectionStatus } from './network.service';
+import { EncrDecrService } from '../storage/encrdecrservice.service';
+
 import * as AWS from 'aws-sdk';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AwsS3Service {
+
+export class AwsS3Service extends StoreBaseService {
   currentFile: File;
 
-  constructor() { }
+  constructor(
+     encrDecr: EncrDecrService,
+     networkSvc: NetworkService
+  ) { 
+    super(encrDecr, networkSvc);
+  }
 
   upload(result){
     var bucketName =  environment.awsConfig.bucketName;
@@ -41,11 +51,38 @@ export class AwsS3Service {
       ACL: 'public-read'
     }, function(err, data) {
       if (err) {
-        //return alert('There was an error uploading your photo: '+err.message);
+        //alert('There was an error uploading your photo: '+err.message);
         console.log('There was an error uploading your file: '+err.message);
-      }
+        this.storeResultLocally(result);
+    }
       console.log('Successfully uploaded photo.');
     });  
   }
+
+  uploadSurveyResult(result) {
+    if(this.networkSvc.getCurrentNetworkStatus() == ConnectionStatus.Online){
+        //upload Local Data first
+        this.uploadLocalData();
+        //upload current survey Data
+        this.upload(result);   
+    } else {
+        this.storeResultLocally(result);
+    }
+      
+  }    
+  
+  //upload local data
+  uploadLocalData() {
+    var storedObj = this.getLocalData();
+    if(storedObj != null) {
+      this.clearLocalData();
+      var surveyArray = storedObj['storedSurvey'];
+      for (let op of surveyArray) {
+        this.upload(op);        //upload data from local storage, already sved, not need to save again
+      }
+    }
+      
+  }
+
 
 }

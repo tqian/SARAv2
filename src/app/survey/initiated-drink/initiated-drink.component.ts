@@ -1,11 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { File } from '@ionic-native/file/ngx';
-import { SaveDataService } from '../save-data.service';
+//import { SaveDataService } from '../save-data.service';
 import { StoreToFirebaseService } from '../../storage/store-to-firebase.service';
 import { AwsS3Service } from '../../storage/aws-s3.service';
 import { Question } from '../question';
 import { AzureService } from '../../storage/azure.service';
+import { Router } from '@angular/router';
 
 declare var cordova: any;
 
@@ -21,8 +22,8 @@ export class InitiatedDrinkComponent implements OnInit {
 
   constructor(
     private httpClient: HttpClient,
+    private router: Router,
     private file: File,
-    private saveDataService : SaveDataService,
     private storeToFirebaseService: StoreToFirebaseService,
     private awsS3Service: AwsS3Service,
     private azureService: AzureService
@@ -51,7 +52,7 @@ export class InitiatedDrinkComponent implements OnInit {
     console.log("Inside storeData");
     console.log(this.question);
     console.log(JSON.stringify(this.question));
-    this.saveDataService.saveData("SurveyResult", this.question);
+    //this.saveDataService.saveData("SurveyResult", this.question);
 
     //var jsonString = JSON.stringify(surveyResult);
     //var fileDir = cordova.file.externalApplicationStorageDirectory; 
@@ -65,17 +66,17 @@ export class InitiatedDrinkComponent implements OnInit {
     //this.storeToFirebaseService.initFirebase();
     //this.storeToFirebaseService.storeTofirebase(surveyResult);
 
-    //this.storeToFirebaseService.addSurvey('/results',this.question.getData());
+    this.storeToFirebaseService.uploadSurveyResult('/results',this.question.getData());
     
     //save to Amazon AWS S3
-    this.awsS3Service.upload(this.question.getData());
+    //this.awsS3Service.uploadSurveyResult(this.question.getData());
     console.log("End of storeData");
 
     //save to azure 
-    this.azureService.upload(this.question.getData());
+    //this.azureService.uploadSurveyResult(this.question.getData());
 
     //this.saveDataService.browseToReward('/incentive/award');
-    this.saveDataService.browseToReward('incentive/visualization');
+    this.router.navigate(['incentive/visualization']);
   }
 
   printValue(){

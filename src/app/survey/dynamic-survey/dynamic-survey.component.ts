@@ -327,12 +327,12 @@ export class DynamicSurveyComponent implements OnInit {
         console.log("lifeInsightObj: "+JSON.stringify(this.lifeInsightObj));
         window.localStorage.setItem("lifeInsight", JSON.stringify(this.lifeInsightObj));
 
-        this.storeToFirebaseService.addSurvey('/results',this.survey2);
+        this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
         console.log("End of storeData");
         console.log(this.survey2);
         
         //save to Amazon AWS S3
-        this.awsS3Service.upload(this.survey2);
+        this.awsS3Service.uploadSurveyResult(this.survey2);
         //console.log("End of storeData");
         
         if(Math.random() > 0.5 ){

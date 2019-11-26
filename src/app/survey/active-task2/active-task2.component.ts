@@ -72,7 +72,7 @@ export class ActiveTask2Component implements OnInit {
     //at_data.push(tapping_data);
   
     this.saveDataService.saveData("activetasks_data_today", JSON.stringify(tapping_data));
-    this.storeToFirebaseService.addSurvey('/activetasks2_data', tapping_data);
+    this.storeToFirebaseService.uploadSurveyResult('/activetasks2_data', tapping_data);
     this.saveDataService.browseToReward('/incentive/award-memes');
 
   }

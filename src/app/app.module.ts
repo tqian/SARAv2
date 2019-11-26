@@ -19,6 +19,7 @@ import { NotificationModule } from './notification/notification.module';
 import { LifeInsightsModule } from './incentive/life-insights/life-insights.module';
 
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { Network } from '@ionic-native/network/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,6 +40,7 @@ import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
     File,
     OneSignal,
     GoogleAnalytics,
+    Network, 
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
