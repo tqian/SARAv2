@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BlobService, UploadConfig, UploadParams } from 'angular-azure-blob-service'
+import { environment } from '../../environments/environment';
+import { StoreBaseService } from './storage-base.service';
+import { EncrDecrService } from '../storage/encrdecrservice.service';
+import { NetworkService, ConnectionStatus } from './network.service';
 
 //angular-azure-blob-service
 const Config: UploadParams = {
-  sas: '?sv=2018-03-28&ss=b&srt=sco&sp=rwl&st=2019-06-27T18%3A15%3A56Z&se=2020-06-28T18%3A15%3A00Z&sig=vccYOEN3SG%2BErA4%2FzmDNn0w4qOn%2FT4tB8jGnEIJoXh4%3D',
-  storageAccount: 'securebloblyh',
-  containerName: 'mycontainer'
+  sas: environment.azureConfig.sas,
+  storageAccount:  environment.azureConfig.storageAccount,
+  containerName: environment.azureConfig.containerName
 };
 
 @Injectable({
@@ -13,14 +17,18 @@ const Config: UploadParams = {
 })
 
 
-export class AzureService {
+export class AzureService extends StoreBaseService{
   currentFile: File;
   config: UploadConfig;
   private percent: number;
 
   constructor(    
+    encrDecr: EncrDecrService,
+    networkSvc: NetworkService,
     private blobsvc: BlobService
-  ) { }
+  ) { 
+    super(encrDecr, networkSvc);
+  }
 
   upload (result) {
     //var fileDir = cordova.file.externalDataDirectory; 
@@ -36,6 +44,9 @@ export class AzureService {
         },
         error: (err) => {
           console.log('Error:', err);
+          //if(saveToLocal) {
+            this.storeResultLocally(result);
+          //}
         },
         progress: (percent) => {
           this.percent = percent;
@@ -43,4 +54,30 @@ export class AzureService {
       };
       this.blobsvc.upload(this.config);
   }
+
+  uploadSurveyResult(result) {
+    if(this.networkSvc.getCurrentNetworkStatus() == ConnectionStatus.Online){
+        //upload Local Data first
+        this.uploadLocalData();
+        //upload current survey Data
+        this.upload(result);
+    } else {
+        this.storeResultLocally(result);
+    }
+      
+  }    
+  
+    //upload local data
+    uploadLocalData() {
+      var storedObj = this.getLocalData();
+      if(storedObj != null) {
+        this.clearLocalData();
+        var surveyArray = storedObj['storedSurvey'];
+        for (let op of surveyArray) {
+          this.upload(op);
+        }
+      }
+ 
+    }
+
 }
