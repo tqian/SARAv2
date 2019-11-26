@@ -1,3 +1,6 @@
 node_modules
+www
+platforms
+plugins
 src/environments/environment.dev.ts
 .vscode/launch.json
