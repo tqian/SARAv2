@@ -1,6 +1,6 @@
 //this component will register/login a user
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService, AuthResponseData } from './auth.service';
 import { Observable, Subscription } from 'rxjs';
@@ -13,10 +13,12 @@ import { UserProfileService } from '../user-profile/user-profile.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
   isLoading = false;
   error: string = null;
+  private userSub: Subscription;
+  private authSub: Subscription;
 
   constructor(private authService: AuthService, 
     private router: Router,
@@ -39,8 +41,6 @@ export class AuthComponent implements OnInit {
     const userName = form.value.userName;
     const password = form.value.password;
     let authObs: Observable<AuthResponseData>;
-    console.log("test " );
-    console.log("userName: " + userName);
 
     this.isLoading = true;
     if(this.isLoginMode){
@@ -49,18 +49,15 @@ export class AuthComponent implements OnInit {
       authObs =  this.authService.signup(userName, password);
     }
 
-    authObs.subscribe(resData => {
-      this.userProfileService.initialize();
-
-      let userSub2:Subscription = this.userProfileService.initialLoading.subscribe(initialLoading =>{
-        if(initialLoading ===false){
-          this.isLoading = false;
-          console.log("userProfile at auth: " + JSON.stringify( this.userProfileService.userProfile));
-          console.log("userProfile at auth: " + this.userProfileService.userProfile.points);          // console.log("points at auth: " + this.userProfileService.userProfile.points)
-          // this.router.navigate(['/']);
-          this.router.navigateByUrl('/home');
-        }});        
-
+    this.authSub = authObs.subscribe(resData => {
+      this.userSub = this.userProfileService.initializeObs()
+        .subscribe(
+          ()=>
+          {
+            this.router.navigateByUrl('/home');
+            this.isLoading = false;
+          }          
+        );      
       console.log(resData);
     }, errorMessage=> {
       console.log(errorMessage);
@@ -68,5 +65,15 @@ export class AuthComponent implements OnInit {
       this.isLoading = false;
     });
     form.reset();
+  }
+
+
+  ngOnDestroy(){
+    if(this.userSub){
+      this.userSub.unsubscribe();
+    }
+    if(this.authSub){
+      this.authSub.unsubscribe();
+    }
   }
 }

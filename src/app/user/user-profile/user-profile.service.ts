@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import * as firebase from 'firebase';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +17,14 @@ export class UserProfileService {
   constructor(private http: HttpClient) { }
 
 
-
- 
-  initialize(){
+  initializeObs(){
     //get profile from server
     // this.userProfile
-    this.http
+    return this.http
       .post<any>(environment.userServer+'/userinfo',{"empty":"empty"})
-      .subscribe(response =>{
+      .pipe(tap(
+        response =>
+        {
         console.log("response: "+  response.userName);
         if (!response.userName){
           console.log("blank or empty user_name");
@@ -35,11 +36,10 @@ export class UserProfileService {
         }
         this.saveProfileToDevice();
         this.initialLoading.next(false);
-      });
-
+      }
+      ));
   }
-
-
+ 
   saveToServer(){ 
     this.loadProfileFromDevice(); 
     const userProfile: UserProfile = this.userProfile;

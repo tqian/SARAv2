@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -7,12 +7,13 @@ import { OneSignal } from '@ionic-native/onesignal/ngx';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './user/auth/auth.service';
 import { UserProfileService } from './user/user-profile/user-profile.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -25,13 +26,24 @@ export class AppComponent implements OnInit {
     this.initializeApp();
   }
 
+  private userSub: Subscription;
+
   ngOnInit(){
+  }
+
+  ngOnDestroy(){
+    if(this.userSub){
+      this.userSub.unsubscribe();
+    }
   }
 
   initializeApp() {
     this.authService.autoLogin();
     if(this.authService.isLoggedIn()){
-      this.userProfileService.initialize();
+      this.userSub = this.userProfileService.initializeObs().subscribe();
+      // this.userProfileService.initialize();
+      // if we can for things to wait to progress in here
+      // then, we'll only need to load user profile here and at login in Auth component
     }
 
 
