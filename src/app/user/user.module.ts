@@ -20,7 +20,7 @@ import { LoadingSpinnerComponent } from './auth/loading-spinner/loading-spinner.
     CommonModule,
     FormsModule,
     IonicModule.forRoot(),
-    AngularFireModule.initializeApp(environment.firebase),
+    // AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule
     
   ],
