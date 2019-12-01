@@ -1,19 +1,21 @@
 import { Component, OnInit, ViewChild, ViewContainerRef, NgModule, Compiler, Injector, NgModuleRef, ElementRef, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StoreToFirebaseService } from '../../storage/store-to-firebase.service';
+import { AwsS3Service } from '../../storage/aws-s3.service';
 import { EncrDecrService } from '../../storage/encrdecrservice.service';
 import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { UserProfileService } from '../../user/user-profile/user-profile.service';
 import { UserProfile } from '../../user/user-profile/user-profile.model';
-
+import * as lifeInsightProfile from "../../../assets/data/life_insight.json";   
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 @Component({
   selector: 'app-dynamic-survey',
   templateUrl: './dynamic-survey.component.html',
   styleUrls: ['./dynamic-survey.component.scss'],
-  providers: [UserProfileService],
+  providers: [UserProfileService],  //try commenting out
 })
 
 export class DynamicSurveyComponent implements OnInit {
@@ -66,9 +68,11 @@ export class DynamicSurveyComponent implements OnInit {
   constructor(private _compiler: Compiler,
     private _injector: Injector,
     private _m: NgModuleRef<any>, 
+    private awsS3Service: AwsS3Service,
     private storeToFirebaseService: StoreToFirebaseService,
     private EncrDecr: EncrDecrService,
     private router: Router,
+    private ga: GoogleAnalytics,
     public plt: Platform,
     private userProfileService: UserProfileService) {
   }
@@ -123,8 +127,11 @@ export class DynamicSurveyComponent implements OnInit {
     const tmpCmp = Component({ template: this.survey_string })(class implements OnInit{
       
       survey2 = {};
+      lifeInsightObj = {};
       storeToFirebaseService: StoreToFirebaseService;
+      ga: GoogleAnalytics;
       EncrDecr: EncrDecrService;
+      awsS3Service: AwsS3Service;
       plt: Platform;
       router: Router;
       userProfile: UserProfile;
@@ -219,8 +226,9 @@ export class DynamicSurveyComponent implements OnInit {
       }
 
       storeData(){
-        console.log("Inside storeData");
+        // console.log("Inside storeData");
         console.log(JSON.stringify(this.survey2));
+        this.ga.trackEvent('Submit Button', 'Tapped Action', 'Submit the completed survey', 0);
         //this.saveDataService.saveData("SurveyResult", this.question);
     
         //var jsonString = JSON.stringify(surveyResult);
@@ -262,17 +270,63 @@ export class DynamicSurveyComponent implements OnInit {
         console.log('Decrypted :' + decrypted);
         this.survey2['encrypted'] = encrypted;
 
-        this.userProfileService.surveyCompleted();
-        // setInterval(() => {userProfileService: UserProfileService;this.userProfileService.surveyCompleted()},0);
-        
-        this.storeToFirebaseService.addSurvey('/results',this.survey2);
+        this.userProfileService.surveyCompleted();        
 
-        // this.router.navigate(['incentive/sample-life-insight']);
-        this.router.navigate(['home']);
+        var questionsArray = lifeInsightProfile.questions;  //["Q3d","Q4d","Q5d","Q8d"]
+        if(window.localStorage['lifeInsight'] == undefined) {
 
-        
+          for (let question of questionsArray) {          
+            this.lifeInsightObj[question] = {};
+            this.lifeInsightObj[question]['dates'] = [moment().format("DD-MM-YYYY")];
+            if(this.survey2.hasOwnProperty(question)) {
+              this.lifeInsightObj[question]['data'] = [parseInt(this.survey2[question])];
+            }
+            else {
+              this.lifeInsightObj[question]['data'] = [null];
+            }
+          }
+
+          // this.lifeInsightObj['Q4d'] = {};
+          // this.lifeInsightObj['Q4d']['dates'] = [moment().format("DD-MM-YYYY")];
+          // if(this.survey2.hasOwnProperty('Q4d')) {
+          //   this.lifeInsightObj['Q4d']['data'] = [parseInt(this.survey2['Q4d'])];
+          // }
+          // else {
+          //   this.lifeInsightObj['Q4d']['data'] = [null];
+          // }
+         
+        }
+        else {
+           this.lifeInsightObj= JSON.parse(window.localStorage["lifeInsight"]);
+
+           for (let question of questionsArray) {          
+              this.lifeInsightObj[question]['dates'].push(moment().format("DD-MM-YYYY"));
+              if(this.survey2.hasOwnProperty(question)) {
+                  this.lifeInsightObj[question]['data'].push(parseInt(this.survey2[question]));
+                }
+                else {
+                  this.lifeInsightObj[question]['data'].push(null);
+                }
+            }
+
+            // this.lifeInsightObj['Q4d']['dates'].push(moment().format("DD-MM-YYYY"));
+            // if(this.survey2.hasOwnProperty('Q4d')) {
+            //    this.lifeInsightObj['Q4d']['data'].push(parseInt(this.survey2['Q4d']));
+            //  }
+            //  else {
+            //    this.lifeInsightObj['Q4d']['data'].push(null);
+            //  }
+ 
+        }
+        console.log("lifeInsightObj: "+JSON.stringify(this.lifeInsightObj));
+        window.localStorage.setItem("lifeInsight", JSON.stringify(this.lifeInsightObj));
+
+        this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
+        console.log("End of storeData");
+        console.log(this.survey2);
+
         //save to Amazon AWS S3
-        //this.awsS3Service.upload(this.question.getData());
+        this.awsS3Service.uploadSurveyResult(this.survey2);
         //console.log("End of storeData");
     
         if(Math.random() > 0.5 ){
@@ -298,9 +352,11 @@ export class DynamicSurveyComponent implements OnInit {
       .then((factories) => {
         const f = factories.componentFactories[0];
         const cmpRef = this.vc.createComponent(f);
+        cmpRef.instance.awsS3Service = this.awsS3Service;
         cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
         cmpRef.instance.userProfileService = this.userProfileService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
+        cmpRef.instance.ga = this.ga;
         cmpRef.instance.plt = this.plt;
         cmpRef.instance.router = this.router;// Router,
         cmpRef.instance.name = 'dynamic';
