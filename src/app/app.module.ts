@@ -17,6 +17,8 @@ import { IncentiveModule } from './incentive/incentive.module';
 import { LifeInsightsModule } from './incentive/life-insights/life-insights.module';
 import { UserModule } from './user/user.module';
 import { FormsModule } from '@angular/forms';
+import { Network } from '@ionic-native/network/ngx';
+import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -37,6 +39,8 @@ import { FormsModule } from '@angular/forms';
     SplashScreen,
     File,
     OneSignal,
+    GoogleAnalytics,
+    Network,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
