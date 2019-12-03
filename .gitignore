@@ -4,3 +4,4 @@ platforms
 plugins
 src/environments/environment.dev.ts
 .vscode/launch.json
+debug.log
