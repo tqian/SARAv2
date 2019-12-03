@@ -50,15 +50,32 @@ export class AuthComponent implements OnInit, OnDestroy {
     }
 
     this.authSub = authObs.subscribe(resData => {
-      this.userSub = this.userProfileService.initializeObs()
+      console.log("auth login/signup response: "+ JSON.stringify(resData));
+
+      if(resData.hasOwnProperty('access_token') && resData.hasOwnProperty('refresh_token') ){
+        console.log("has access token");
+        // the response contains an access token and refresh token
+        this.userSub = this.userProfileService.initializeObs()
         .subscribe(
           ()=>
           {
             this.router.navigateByUrl('/home');
             this.isLoading = false;
-          }          
+          }        
         );      
-      console.log(resData);
+      }
+      else
+      {
+        this.isLoading = false;
+        this.authService.loggedInUser.next(null);
+        if(resData.hasOwnProperty('message')){
+          this.error = resData.message;
+        }
+        else{
+          this.error = "Unknown error";
+        }
+      }
+      // console.log(resData);
     }, errorMessage=> {
       console.log(errorMessage);
       this.error = errorMessage;

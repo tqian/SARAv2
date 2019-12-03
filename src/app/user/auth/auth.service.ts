@@ -9,10 +9,11 @@ import { environment } from 'src/environments/environment';
 import { UserProfileService } from '../user-profile/user-profile.service';
 
 export interface AuthResponseData{
-  access_token: string;
-  refresh_token: string;
-  access_expires: string;
-  refresh_expires: string;
+  message?: string;
+  access_token?: string;
+  refresh_token?: string;
+  access_expires?: string;
+  refresh_expires?: string;
   registered? : boolean;
 }
 @Injectable({

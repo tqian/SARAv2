@@ -5,6 +5,7 @@ import * as firebase from 'firebase';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class UserProfileService {
 
   constructor(private http: HttpClient) { }
 
-
+    //returns Observable that we can subsrbie to so as to trigger an action after 
+  //user profile has been initialized
   initializeObs(){
     //get profile from server
     // this.userProfile
@@ -25,11 +27,13 @@ export class UserProfileService {
       .pipe(tap(
         response =>
         {
-        console.log("response: "+  response.userName);
-        if (!response.userName){
+        console.log("initializeObs response: "+  JSON.stringify(response));
+        if (!response.username){
           console.log("blank or empty user_name");
           const username = localStorage.getItem('loggedInUser');
-          this.userProfile = new UserProfile("1", username,false,[],0,0);
+          const currenttime:Date = new Date();
+          const dateString: string = moment(currenttime).format('MMMM Do YYYY, h:mm:ss a Z');
+          this.userProfile = new UserProfile(username,false,[],0,0,currenttime.getTime(), dateString);
         }
         else{
           this.userProfile = response;
@@ -53,8 +57,8 @@ export class UserProfileService {
       .subscribe(response =>{
         console.log(response);
       });
-
-  }
+      console.log("saveToServer userProfile: " + JSON.stringify(userProfile));
+  } 
 
   retrieve(userID: string){
   }
@@ -65,16 +69,18 @@ export class UserProfileService {
     return this.userProfile.points;
   }
 
-  get userName(){
-    return this.userProfile.userName;
+  get username(){
+    return this.userProfile.username;
   }
-  set userName(userName:string){
-    this.userProfile.userName = userName;
+  set username(username:string){
+    this.userProfile.username = username;
     this.saveProfileToDevice();
   }
 
   initTestProfile(){
-    const userProfile = new UserProfile('X1W345','testy',false,  [], 0, 3);
+    const currenttime:Date = new Date();
+    const dateString: string = moment(currenttime).format('MMMM Do YYYY, h:mm:ss a Z');
+    const userProfile = new UserProfile('testy',false,  [], 0, 3, currenttime.getTime(), dateString);
     this.userProfile = userProfile;
     this.saveProfileToDevice();
     //STORE ON DEVICE
@@ -99,13 +105,29 @@ export class UserProfileService {
 
   public surveyCompleted(){
     const username = localStorage.getItem('loggedInUser'); //this.authService.loggedInUser.getValue()
+    // check if survey has already been take for the current day or admin is contained in the username
     if(!this.surveyTakenForCurrentDay()|| username.indexOf('admin')>=0){
       this.addDateTaken();
       this.addSurveyPoints();
+      this.userProfile.lastupdate =this.numericCurrenDateTime;
+      const dateString: string = moment(this.userProfile.lastupdate).format('MMMM Do YYYY, h:mm:ss a Z');
+      this.userProfile.readable_ts = dateString;
       this.saveToServer();
     }
   }
 
+  get stringCurrenDate(){
+    //shift hours back by 2, so that 2am, will register as 12am
+    const hoursShift: number = 2;
+    const currentDateTime : Date = new Date();
+    currentDateTime.setHours(currentDateTime.getHours() - hoursShift);
+    //now, set hours, min, sec to zero
+    currentDateTime.setHours(0,0,0,0);
+    return currentDateTime.getFullYear()
+            + "" + ('0' + (currentDateTime.getMonth()+1)).slice(-2) 
+            + "" + ('0' + currentDateTime.getDate()).slice(-2);
+ }
+  
   get numericCurrenDateTime(){
      //shift hours back by 2, so that 2am, will register as 12am
      const hoursShift: number = 2;
@@ -118,7 +140,9 @@ export class UserProfileService {
 
   addDateTaken(){
     this.loadProfileFromDevice();
-    this.userProfile.datesTaken.push(this.numericCurrenDateTime);
+    const stringCurrenDate = this.stringCurrenDate;
+    this.userProfile.datesTaken.push(stringCurrenDate);
+    this.userProfile.survey_data.daily_survey[stringCurrenDate] = 1;
     this.saveProfileToDevice();
   }
 
@@ -127,7 +151,7 @@ export class UserProfileService {
     //check if date already exists in array of dates, otherwise add the date to datesTaken array    
     var hasMatch = false;
     for(var i=0;i<this.userProfile.datesTaken.length;i++){
-        if(this.userProfile.datesTaken[i] == this.numericCurrenDateTime){
+        if(this.userProfile.datesTaken[i] == this.stringCurrenDate){
           hasMatch = true;
             break;
         }
@@ -136,12 +160,13 @@ export class UserProfileService {
   }
 
   addSurveyPoints(){
-    const pointsPerSurvey = 5;
+    const pointsPerSurvey = 100;
     this.addPoints(pointsPerSurvey);
   }
 
   addPoints(points: number){
     this.userProfile.points += points;
+    this.userProfile.survey_data.points += points;
     this.saveProfileToDevice();
     this.saveToServer();
   }
