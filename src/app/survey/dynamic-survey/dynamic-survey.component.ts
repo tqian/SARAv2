@@ -10,6 +10,7 @@ import * as moment from 'moment';
 
 import * as lifeInsightProfile from "../../../assets/data/life_insight.json";
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { AwardDollarService } from '../award-dollar.service';
 
 @Component({
   selector: 'app-dynamic-survey',
@@ -71,6 +72,7 @@ export class DynamicSurveyComponent implements OnInit {
     private awsS3Service: AwsS3Service,
     private storeToFirebaseService: StoreToFirebaseService,
     private EncrDecr: EncrDecrService,
+    private awardDollarService: AwardDollarService,
     private router: Router,
     private ga: GoogleAnalytics,
     public plt: Platform) {
@@ -128,6 +130,7 @@ export class DynamicSurveyComponent implements OnInit {
       survey2 = {};
       lifeInsightObj = {};
       storeToFirebaseService: StoreToFirebaseService;
+      awardDollarService: AwardDollarService;
       ga: GoogleAnalytics;
       EncrDecr: EncrDecrService;
       awsS3Service: AwsS3Service;
@@ -327,12 +330,14 @@ export class DynamicSurveyComponent implements OnInit {
         console.log("lifeInsightObj: "+JSON.stringify(this.lifeInsightObj));
         window.localStorage.setItem("lifeInsight", JSON.stringify(this.lifeInsightObj));
 
+        this.awardDollarService.getDollars();
+        
         this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
         console.log("End of storeData");
         console.log(this.survey2);
         
         //save to Amazon AWS S3
-        this.awsS3Service.uploadSurveyResult(this.survey2);
+       // this.awsS3Service.uploadSurveyResult(this.survey2);
         //console.log("End of storeData");
         
         if(Math.random() > 0.5 ){
@@ -351,7 +356,7 @@ export class DynamicSurveyComponent implements OnInit {
 
     });
 
-    const tmpModule = NgModule({ declarations: [tmpCmp], imports: [FormsModule], providers: [StoreToFirebaseService] })(class {
+    const tmpModule = NgModule({ declarations: [tmpCmp], imports: [FormsModule], providers: [StoreToFirebaseService, AwardDollarService,] })(class {
     });
 
     this._compiler.compileModuleAndAllComponentsAsync(tmpModule)
@@ -360,6 +365,7 @@ export class DynamicSurveyComponent implements OnInit {
         const cmpRef = this.vc.createComponent(f);
         cmpRef.instance.awsS3Service = this.awsS3Service;
         cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
+        cmpRef.instance.awardDollarService = this.awardDollarService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
         cmpRef.instance.ga = this.ga;
         cmpRef.instance.plt = this.plt;

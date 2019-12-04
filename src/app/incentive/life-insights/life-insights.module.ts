@@ -12,19 +12,19 @@ import { Routes, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 
-const routes: Routes = [
+/*const routes: Routes = [
     { path: 'sample-life-insights', component: SampleLifeInsightsComponent }
-];
+];*/
 
 @NgModule({
-  declarations: [Q1MotivatedComponent,SampleLifeInsightsComponent],
+  declarations: [Q1MotivatedComponent],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule.forRoot(),
-    RouterModule.forChild(routes)
+    //RouterModule.forChild(routes)
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  exports:[Q1MotivatedComponent,SampleLifeInsightsComponent]
+  exports:[Q1MotivatedComponent]
 })
 export class LifeInsightsModule { }

@@ -7,10 +7,12 @@ import { AwardMemesComponent } from './award-memes/award-memes.component';
 //import { DemoAquariumComponent } from './aquarium/demo-aquarium/demo-aquarium.component';
 //import { SurveyModule } from '../survey/survey.module';
 import { Routes, RouterModule } from '@angular/router';
+import { SampleLifeInsightsComponent } from './life-insights/sample-life-insights/sample-life-insights.component';
 
 const routes: Routes = [
 //  { path: 'award', component: AwardComponent },
   { path: 'award-memes', component: AwardMemesComponent },
+  { path: 'sample-life-insight', component: SampleLifeInsightsComponent }
 //  { path: 'visualization', component: VisualizationComponent }
 ];
 
@@ -18,6 +20,7 @@ const routes: Routes = [
   declarations: [
     //AwardComponent, 
     AwardMemesComponent, 
+    SampleLifeInsightsComponent
     //VisualizationComponent
   ],
   imports: [
@@ -28,6 +31,7 @@ const routes: Routes = [
   exports:[
     //AwardComponent, 
     AwardMemesComponent, 
+    SampleLifeInsightsComponent
     //VisualizationComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
