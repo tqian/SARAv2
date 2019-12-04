@@ -39,13 +39,8 @@ import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
     SplashScreen,
     File,
     OneSignal,
-<<<<<<< .merge_file_a13748
     Network,
     GoogleAnalytics,
-=======
-    GoogleAnalytics,
-    Network,
->>>>>>> .merge_file_a30888
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
