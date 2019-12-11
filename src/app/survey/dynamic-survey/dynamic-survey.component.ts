@@ -332,12 +332,13 @@ export class DynamicSurveyComponent implements OnInit {
 
         this.awardDollarService.getDollars();
         
-        this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
-        console.log("End of storeData");
+        //this.storeToFirebaseService.uploadSurveyResult('/results',this.survey2);
+        //console.log("End of storeData");
         console.log(this.survey2);
         
         //save to Amazon AWS S3
-       // this.awsS3Service.uploadSurveyResult(this.survey2);
+        console.log("save to Amazon AWS S3")
+        this.awsS3Service.uploadSurveyResult(this.survey2);
         //console.log("End of storeData");
         
         if(Math.random() > 0.5 ){

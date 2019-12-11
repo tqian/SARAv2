@@ -24,11 +24,10 @@ export class OneSignalService {
       this.oneSignal.startInit('f9c4370d-cbcb-4e6f-ab1f-25d1c41b8f3a', '851185487102');
 
       this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
-    
       this.oneSignal.handleNotificationReceived().subscribe(data => {
         this.time = new Date().getTime();
         this.formattedTime = moment().format('MMMM Do YYYY, h:mm:ss a Z');
-        console.log("notification is received at: "+this.time+" formatted: "+this.formattedTime);
+        //console.log("notification is received at: "+this.time+" formatted: "+this.formattedTime);
 
         let title = data.payload.title;
         let msg = data.payload.body;
@@ -50,7 +49,17 @@ export class OneSignalService {
 
       });
       
-      this.oneSignal.endInit();      
+      this.oneSignal.endInit();   
+      
+      //Can getIds after endInit.
+      this.oneSignal.getIds().then(ids => {
+        console.log("PlayID: "+ids.userId);
+        if( window.localStorage.getItem("PlayID") == undefined || 
+        window.localStorage.getItem("PlayID") != ids.userId) {
+           window.localStorage.setItem("PlayID", ids.userId);
+        }
+      });
+
   }
 
   async showAlert(title, msg) {

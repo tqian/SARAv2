@@ -42,11 +42,13 @@ export class AwsS3Service extends StoreBaseService {
       //secretAccessKey: secretAccessKey
     });  
 
-    this.currentFile = new File([JSON.stringify(result)], "result.json", {type: "text/plain"});
+    var fileName = "result"+result['endtimeUTC']+".json";
+    this.currentFile = new File([JSON.stringify(result)], fileName, {type: "text/plain"});
+    console.log("result"+result['endtimeUTC']+".json"+" key: "+fileName);
 
     s3.upload({
       Bucket: bucketName,
-      Key: this.currentFile.name,
+      Key: fileName, //this.currentFile.name,
       Body: this.currentFile,
       ACL: 'public-read'
     }, function(err, data) {
@@ -54,8 +56,8 @@ export class AwsS3Service extends StoreBaseService {
         //alert('There was an error uploading your photo: '+err.message);
         console.log('There was an error uploading your file: '+err.message);
         this.storeResultLocally(result);
-    }
-      console.log('Successfully uploaded photo.');
+      }
+      console.log('Successfully uploaded survey to s3.');
     });  
   }
 
