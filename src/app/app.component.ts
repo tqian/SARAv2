@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from './user/auth/auth.service';
 import { UserProfileService } from './user/user-profile/user-profile.service';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private httpClient: HttpClient,
     private oneSignal: OneSignal,
     private authService: AuthService,
-    private userProfileService: UserProfileService,
+    private userProfileService: UserProfileService
   ) {
     this.initializeApp();
   }
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
       };
 
       //this.oneSignal.startInit('YOUR ONESIGNAL APP ID', 'YOUR ANDROID ID');
-      this.oneSignal.startInit('f9c4370d-cbcb-4e6f-ab1f-25d1c41b8f3a', '851185487102');
+      this.oneSignal.startInit(environment.oneSignalAppId, environment.firebaseConfig.messagingSenderId);
 
       this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
       

@@ -7,6 +7,8 @@ import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { UserProfileService } from '../user-profile/user-profile.service';
+import { tap } from 'rxjs/operators';
+import { OneSignal } from '@ionic-native/onesignal/ngx';
 
 @Component({  
   selector: 'app-auth',
@@ -22,7 +24,8 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, 
     private router: Router,
-    private userProfileService: UserProfileService){}
+    private userProfileService: UserProfileService,
+    private oneSignal: OneSignal){}
 
   onSwitchMode(){
     this.isLoginMode = !this.isLoginMode;
@@ -56,6 +59,21 @@ export class AuthComponent implements OnInit, OnDestroy {
         console.log("has access token");
         // the response contains an access token and refresh token
         this.userSub = this.userProfileService.initializeObs()
+        .pipe(
+          tap(
+              ()=>{
+                this.oneSignal.getIds().then(async (id) =>  {
+                  const playerId = id.userId;
+                  this.userProfileService.userProfile.oneSignalPlayerId = id.userId;
+                  console.log(id);
+                  this.userProfileService.saveProfileToDevice();
+                  this.userProfileService.saveToServer();
+                });
+              }
+    
+    
+          )
+    )
         .subscribe(
           ()=>
           {

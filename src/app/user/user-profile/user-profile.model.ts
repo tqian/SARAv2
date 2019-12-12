@@ -13,7 +13,7 @@ export class UserProfile {
     public life_insights = {"daily_survey": {}};
     public reinfrocement_data = {};
 
-
+    public oneSignalPlayerId?: string;                     
 
     public lastupdate: number;
     public readable_ts: string;

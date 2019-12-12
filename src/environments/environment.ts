@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   userServer:"http://autherServerName.com",
+  oneSignalAppId: "<insert Id here>",
+
   firebase: {
     apiKey: "AIzaSyDM8d1yG2rNPc8AotB0NoN3Q2wMq4HDooo",
     authDomain: "adapts-331ee.firebaseapp.com",
@@ -29,7 +31,7 @@ export const environment = {
     // databaseURL: "https://sarav2-6a033.firebaseio.com",
     // projectId: "sarav2-6a033",
     // storageBucket: "sarav2-6a033.appspot.com",
-    // messagingSenderId: "489827689493",
+     messagingSenderId: "489827689493",
     // appId: "1:489827689493:web:7f72eb7033e9acf5"
   
   }
