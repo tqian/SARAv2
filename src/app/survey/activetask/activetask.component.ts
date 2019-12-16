@@ -9,7 +9,7 @@ import { StoreToFirebaseService } from '../../storage/store-to-firebase.service'
 })
 export class ActivetaskComponent implements OnInit {
 
-  private count: number;
+  count: number;
 
   constructor(private saveDataService: SaveDataService,
     private storeToFirebaseService: StoreToFirebaseService) { 

@@ -4,13 +4,13 @@ import { IonicModule } from '@ionic/angular';
 import { DynamicSurveyComponent } from 'src/app/survey/dynamic-survey/dynamic-survey.component';
 
 @NgModule({
-  declarations: [DynamicSurveyComponent],
+  declarations: [],
   imports: [
     CommonModule,
     IonicModule.forRoot()
   ],
   exports:[
-    DynamicSurveyComponent
+    
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
