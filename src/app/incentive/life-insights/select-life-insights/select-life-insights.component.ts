@@ -3,25 +3,18 @@ import { Chart } from 'chart.js';
 import * as moment from 'moment';
 
 import * as lifeInsightProfile from "../../../../assets/data/life_insight.json";
-//import { PreLoad } from '../../../PreLoad';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
 
 @Component({
-  selector: 'app-sample-life-insights',
-  templateUrl: './sample-life-insights.component.html',
-  styleUrls: ['./sample-life-insights.component.scss'],
+  selector: 'app-select-life-insights',
+  templateUrl: './select-life-insights.component.html',
+  styleUrls: ['./select-life-insights.component.scss'],
 })
-
-//@PreLoad('q1lifeinsight')
-export class SampleLifeInsightsComponent implements OnInit {
+export class SelectLifeInsightsComponent implements OnInit {
 
   @ViewChild('lineCanvas') lineCanvas: ElementRef<HTMLDivElement>;
-  //@Input() jsonObj : any;
-  //private _jsonObj: any;
-
-  //jsonObj;
-
+  
   imgloc;
   title;
   subtext;
@@ -37,28 +30,19 @@ export class SampleLifeInsightsComponent implements OnInit {
   index = 0;
   //inputJson = {};
   selectedValue;
+  selectedTitle;
   
+
+
   private lineChart: Chart;
 
   constructor(private ga: GoogleAnalytics) {          
   }
 
-/*   get jsonObj(): any {
-    // transform value for display
-    return this._jsonObj;
-  }
-  
-  @Input()
-  set jsonObj(jsonObj: any) {
-    console.log('prev _jsonObj: ', this._jsonObj);
-    console.log('got jsonObj: ', jsonObj);
-    this._jsonObj = jsonObj;
-  } */
-
   ngOnInit(){
 
-    this.ga.trackView('sample-life-insight')
-    .then(() => {console.log("trackView at sample-life-insight!")})
+    this.ga.trackView('select-life-insight')
+    .then(() => {console.log("trackView at select-life-insight!")})
     .catch(e => console.log(e));
 
     this.init(this.index);
@@ -67,8 +51,6 @@ export class SampleLifeInsightsComponent implements OnInit {
 
   init(index: number){
     //console.log(this.inputStr);
-    //this.jsonObj = JSON.parse(this.inputStr);
-    this.index = Math.floor(Math.random() * lifeInsightProfile.questions.length);    
     this.question = lifeInsightProfile.questions[this.index]; 
     this.imgloc = lifeInsightProfile.qimgs[this.index];
     this.title = lifeInsightProfile.lifeInsightsTitle[this.index];
@@ -182,13 +164,14 @@ export class SampleLifeInsightsComponent implements OnInit {
     });
   }
 
-  /*onChangeCategorySelect(){
+  onChangeCategorySelect(){
     console.log("onChangeCategorySelect: "+this.selectedValue);
     this.index =  this.qYaxisArray.indexOf(this.selectedValue);
     this.init(this.index);   
 
-    this.ga.trackEvent('Select category for Life-insight', 'OnChange Action', 'Switch to display '+this.selectedValue, 0);
+    this.ga.trackEvent('Select category for Select-Life-insight', 'OnChange Action', 'Switch to display '+this.selectedValue, 0);
 
-  }*/
+  }
+
 
 }

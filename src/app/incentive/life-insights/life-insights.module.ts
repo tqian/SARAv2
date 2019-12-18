@@ -9,7 +9,7 @@ import { IonicModule } from '@ionic/angular';
 import { Q1MotivatedComponent } from './q1-motivated/q1-motivated.component';
 import { SampleLifeInsightsComponent } from './sample-life-insights/sample-life-insights.component';
 import { Routes, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+//import { FormsModule } from '@angular/forms';
 
 
 /*const routes: Routes = [
@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
   declarations: [Q1MotivatedComponent],
   imports: [
     CommonModule,
-    FormsModule,
+    //FormsModule,
     IonicModule.forRoot(),
     //RouterModule.forChild(routes)
   ],

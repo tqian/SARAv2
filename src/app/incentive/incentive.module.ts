@@ -8,11 +8,15 @@ import { AwardMemesComponent } from './award-memes/award-memes.component';
 //import { SurveyModule } from '../survey/survey.module';
 import { Routes, RouterModule } from '@angular/router';
 import { SampleLifeInsightsComponent } from './life-insights/sample-life-insights/sample-life-insights.component';
+import { SelectLifeInsightsComponent } from './life-insights/select-life-insights/select-life-insights.component';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
 //  { path: 'award', component: AwardComponent },
   { path: 'award-memes', component: AwardMemesComponent },
-  { path: 'sample-life-insight', component: SampleLifeInsightsComponent }
+  { path: 'sample-life-insight', component: SampleLifeInsightsComponent },
+  { path: 'select-life-insight', component: SelectLifeInsightsComponent }
+
 //  { path: 'visualization', component: VisualizationComponent }
 ];
 
@@ -20,18 +24,21 @@ const routes: Routes = [
   declarations: [
     //AwardComponent, 
     AwardMemesComponent, 
-    SampleLifeInsightsComponent
+    SampleLifeInsightsComponent,
+    SelectLifeInsightsComponent
     //VisualizationComponent
   ],
   imports: [
     CommonModule,
+    FormsModule,
     IonicModule.forRoot(),
     RouterModule.forChild(routes)
   ],
   exports:[
     //AwardComponent, 
     AwardMemesComponent, 
-    SampleLifeInsightsComponent
+    SampleLifeInsightsComponent,
+    SelectLifeInsightsComponent
     //VisualizationComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

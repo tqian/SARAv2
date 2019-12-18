@@ -308,14 +308,18 @@ export class DynamicSurveyComponent implements OnInit {
         else {
            this.lifeInsightObj= JSON.parse(window.localStorage["lifeInsight"]);
 
-           for (let question of questionsArray) {          
+           for (let question of questionsArray) {   
+              if(this.lifeInsightObj[question]['dates'].length == 7) {
+                this.lifeInsightObj[question]['dates'].shift();
+                this.lifeInsightObj[question]['data'].shift();
+              }      
               this.lifeInsightObj[question]['dates'].push(moment().format("DD-MM-YYYY"));
               if(this.survey2.hasOwnProperty(question)) {
-                  this.lifeInsightObj[question]['data'].push(parseInt(this.survey2[question]));
-                }
-                else {
-                  this.lifeInsightObj[question]['data'].push(null);
-                }
+                this.lifeInsightObj[question]['data'].push(parseInt(this.survey2[question]));
+              }
+              else {
+                this.lifeInsightObj[question]['data'].push(null);
+              }
             }
 
             // this.lifeInsightObj['Q4d']['dates'].push(moment().format("DD-MM-YYYY"));
