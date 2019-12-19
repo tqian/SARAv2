@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { UserProfile } from './user-profile.model';
+import { UserProfile, UserProfileFixed } from './user-profile.model';
 import { HttpClient } from '@angular/common/http';
 import * as firebase from 'firebase';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import * as moment from 'moment';
 
@@ -12,6 +12,7 @@ import * as moment from 'moment';
 })
 export class UserProfileService {
   userProfile: UserProfile;
+  userProfileFixed: UserProfileFixed;
   me = this;
   initialLoading =  new BehaviorSubject<boolean>(true);
 
@@ -22,13 +23,52 @@ export class UserProfileService {
   initializeObs(){
     //get profile from server
     // this.userProfile
+    let getProfile = this.http.post<any>(environment.userServer+'/userinfo',{"empty":"empty"}); 
+    let getProfileFixed = this.http.get<any>(environment.userServer+'/userinfofixed');
+
+    return forkJoin([getProfile, getProfileFixed])
+      .pipe(tap(
+        response =>
+        {
+          let response1=response[0];
+          let response2=response[1];
+        console.log("initializeObs response1: "+  JSON.stringify(response1));
+        console.log("initializeObs response2: "+  JSON.stringify(response2));
+
+        if (!response1.username || !response.hasOwnProperty('username') ){
+          console.log("blank or empty user_name");
+          const username = localStorage.getItem('loggedInUser');
+          const currenttime:Date = new Date();
+          const dateString: string = moment(currenttime).format('MMMM Do YYYY, h:mm:ss a Z');
+          this.userProfile = new UserProfile(username,false,[],0,0,currenttime.getTime(), dateString);
+        }
+        else{
+          this.userProfile = response1;
+        }
+        this.userProfileFixed = response2;
+        this.saveProfileToDevice();
+        this.initialLoading.next(false);
+      }
+      ));
+  }
+ 
+  get isActive(){
+    return this.userProfileFixed.isActive;
+  }
+
+  initializeObsOld(){
+    //get profile from server
+    // this.userProfile
+    // let getProfile = this.http.post<any>(environment.userServer+'/userinfo',{"empty":"empty"}); 
+    // let get
+
     return this.http
       .post<any>(environment.userServer+'/userinfo',{"empty":"empty"})
       .pipe(tap(
         response =>
         {
         console.log("initializeObs response: "+  JSON.stringify(response));
-        if (!response.username){
+        if (!response.username || !response.hasOwnProperty('username') ){
           console.log("blank or empty user_name");
           const username = localStorage.getItem('loggedInUser');
           const currenttime:Date = new Date();
@@ -43,7 +83,8 @@ export class UserProfileService {
       }
       ));
   }
- 
+
+
   saveToServer(){ 
     this.loadProfileFromDevice(); 
     const userProfile: UserProfile = this.userProfile;
@@ -88,6 +129,8 @@ export class UserProfileService {
 
   saveProfileToDevice(){
       localStorage.setItem('userProfile', JSON.stringify(this.userProfile));
+      localStorage.setItem('userProfileFixed', JSON.stringify(this.userProfileFixed));
+
   }
 
   profileIsOnDevice(){
@@ -101,6 +144,8 @@ export class UserProfileService {
 
   loadProfileFromDevice(){
     this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    this.userProfileFixed = JSON.parse(localStorage.getItem('userProfileFixed'));
+
   }
 
   public surveyCompleted(){

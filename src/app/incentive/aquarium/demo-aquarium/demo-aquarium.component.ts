@@ -26,6 +26,9 @@ export class DemoAquariumComponent implements OnInit {
   get totalPoints(){
     return this.userProfileService.points;
   }
+  get isActive(){
+    return this.userProfileService.isActive;
+  }
 
   constructor(private router: Router, 
     //private pickGameService: PickGameService,

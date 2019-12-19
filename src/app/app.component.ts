@@ -27,6 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.initializeApp();
   }
 
+  agreeToTerms: boolean = JSON.parse(localStorage.getItem("agreeToTerms"));
+  
   private userSub: Subscription;
 
   ngOnInit(){

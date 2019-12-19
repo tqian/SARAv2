@@ -1,8 +1,3 @@
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//     providedIn: 'root'
-//   })
 export class UserProfile {
     public badges=  { 'daily_survey': [],
                      'money': 0,
@@ -49,3 +44,6 @@ export class UserProfile {
     }
 }
     
+export class UserProfileFixed {
+    public isActive?: boolean;                     
+}

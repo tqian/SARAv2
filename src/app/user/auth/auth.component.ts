@@ -65,7 +65,7 @@ export class AuthComponent implements OnInit, OnDestroy {
                 this.oneSignal.getIds().then(async (id) =>  {
                   const playerId = id.userId;
                   this.userProfileService.userProfile.oneSignalPlayerId = id.userId;
-                  console.log(id);
+                  console.log("onesignal player id: " + id);
                   this.userProfileService.saveProfileToDevice();
                   this.userProfileService.saveToServer();
                 });

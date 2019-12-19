@@ -7,7 +7,6 @@ import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { UserProfileService } from '../../user/user-profile/user-profile.service';
-import { UserProfile } from '../../user/user-profile/user-profile.model';
 import * as lifeInsightProfile from "../../../assets/data/life_insight.json";   
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 
@@ -134,7 +133,6 @@ export class DynamicSurveyComponent implements OnInit {
       awsS3Service: AwsS3Service;
       plt: Platform;
       router: Router;
-      userProfile: UserProfile;
       userProfileService: UserProfileService;
 
       constructor() {

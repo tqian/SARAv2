@@ -19,6 +19,7 @@ import { UserModule } from './user/user.module';
 import { FormsModule } from '@angular/forms';
 import { Network } from '@ionic-native/network/ngx';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { HomePageModule } from './home/home.module';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -32,7 +33,8 @@ import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
     IncentiveModule,
     BlobModule.forRoot(),
     LifeInsightsModule,
-    UserModule
+    UserModule,
+    HomePageModule
   ],
   providers: [
     StatusBar,
