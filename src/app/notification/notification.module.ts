@@ -10,8 +10,8 @@ otherwise:
 Implement in android/ios platform if need to receive notification
 when app is killed.
 
-Copy MyNotificationExtenderBareBones.java file to src.io.ionic folder
-add below to androidmanifest.xml 
+Copy extra-notification-file/MyNotificationExtenderBareBones.java file 
+to src.io.ionic folder add below to androidmanifest.xml 
 
         <service
             android:name="io.ionic.MyNotificationExtenderBareBones"
