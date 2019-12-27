@@ -37,7 +37,10 @@ export class UserProfileService {
           this.userProfile = new UserProfile(username,false,[],0,0,currenttime.getTime(), dateString);
         }
         else{
+          console.log("initializeObs - before setting userProfile");
           this.userProfile = response;
+          console.log("initializeObs - this.userProfile: " + JSON.stringify(this.userProfile));
+
         }
         this.saveProfileToDevice();
         this.initialLoading.next(false);
@@ -156,7 +159,10 @@ export class UserProfileService {
 
   saveProfileToDevice(){
       localStorage.setItem('userProfile', JSON.stringify(this.userProfile));
-      localStorage.setItem('userProfileFixed', JSON.stringify(this.userProfileFixed));
+      
+      //temporarily commenting out 
+      // maybe use this logic in case it's undefined:  https://stackoverflow.com/questions/37417012/unexpected-token-u-in-json-at-position-0
+      // localStorage.setItem('userProfileFixed', JSON.stringify(this.userProfileFixed));
 
   }
 
@@ -171,14 +177,17 @@ export class UserProfileService {
 
   loadProfileFromDevice(){
     this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
-    this.userProfileFixed = JSON.parse(localStorage.getItem('userProfileFixed'));
+    //temporarily commenting out below line (see other instance for more info)
+    // this.userProfileFixed = JSON.parse(localStorage.getItem('userProfileFixed'));
 
   }
 
   public surveyCompleted(){
     const username = localStorage.getItem('loggedInUser'); //this.authService.loggedInUser.getValue()
     // check if survey has already been take for the current day or admin is contained in the username
+    console.log('surveyCompleted - before if loop');
     if(!this.surveyTakenForCurrentDay()|| username.indexOf('admin')>=0){
+      console.log('surveyCompleted - in if loop');
       this.addDateTaken();
       this.addSurveyPoints();
       this.userProfile.lastupdate =this.numericCurrenDateTime;
@@ -222,6 +231,9 @@ export class UserProfileService {
     this.loadProfileFromDevice();
     //check if date already exists in array of dates, otherwise add the date to datesTaken array    
     var hasMatch = false;
+    console.log("surveyTakenForCurrentDay - userProfile: " + this.userProfile);
+    console.log("surveyTakenForCurrentDay - userProfile: " + JSON.stringify("this.userProfile"))
+    console.log("surveyTakenForCurrentDay - this.userProfile.datesTaken.length: " + this.userProfile.datesTaken.length);
     for(var i=0;i<this.userProfile.datesTaken.length;i++){
         if(this.userProfile.datesTaken[i] == this.stringCurrenDate){
           hasMatch = true;
