@@ -13,6 +13,8 @@ import { SampleSurveyComponent } from './survey/sample-survey/sample-survey.comp
 import { SampleLifeInsightsComponent } from './incentive/life-insights/sample-life-insights/sample-life-insights.component';
 import { AuthGuard } from './user/auth/auth.guard';
 import { AuthComponent } from './user/auth/auth.component';
+import { AyaSurveyComponent } from './survey/aya-survey/aya-survey.component';
+import { CaregiverSurveyComponent } from './survey/caregiver-survey/caregiver-survey.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' , canActivate: [AuthGuard]},
@@ -23,6 +25,8 @@ const routes: Routes = [
   //{ path: 'survey/activetask', component: ActivetaskComponent },
   { path: 'survey/activetask2', component: ActiveTask2Component , canActivate: [AuthGuard] },
   { path: 'survey/dynamicsurvey', component: DynamicSurveyComponent , canActivate: [AuthGuard] }, 
+  { path: 'survey/ayasurvey', component: AyaSurveyComponent , canActivate: [AuthGuard] },
+  { path: 'survey/caregiversurvey', component: CaregiverSurveyComponent , canActivate: [AuthGuard] },
   { path: 'survey/samplesurvey', component: SampleSurveyComponent  , canActivate: [AuthGuard]}, 
   { path: 'incentive/award', component: AwardComponent , canActivate: [AuthGuard] },
   { path: 'incentive/award-memes', component: AwardMemesComponent , canActivate: [AuthGuard] },

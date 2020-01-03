@@ -63,6 +63,13 @@ export class UserProfileService {
     return this.userProfileFixed.isActive;
   }
 
+  get isParent(){
+    //temporarily returning true until get the above commented out method working
+    // return true;
+    return this.userProfileFixed.isParent;
+  }
+
+
   initializeObsOld(){
     //get profile from server
     // this.userProfile

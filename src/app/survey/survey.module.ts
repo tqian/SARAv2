@@ -11,9 +11,11 @@ import { ActiveTask2Component } from './active-task2/active-task2.component';
 import { DynamicSurveyComponent } from './dynamic-survey/dynamic-survey.component';
 import { SampleSurveyComponent } from './sample-survey/sample-survey.component';
 import { UserModule } from '../user/user.module';
+import { AyaSurveyComponent } from './aya-survey/aya-survey.component';
+import { CaregiverSurveyComponent } from './caregiver-survey/caregiver-survey.component';
 
 @NgModule({
-  declarations: [InitiatedDrinkComponent,MorningReportComponent,PromptedSurveyComponent,ActivetaskComponent,DynamicSurveyComponent,ActiveTask2Component,SampleSurveyComponent],
+  declarations: [InitiatedDrinkComponent,MorningReportComponent,PromptedSurveyComponent,ActivetaskComponent,DynamicSurveyComponent,ActiveTask2Component,SampleSurveyComponent, AyaSurveyComponent, CaregiverSurveyComponent],
   imports: [
     CommonModule,
     IonicModule.forRoot(),
@@ -28,7 +30,10 @@ import { UserModule } from '../user/user.module';
     ActivetaskComponent,
     ActiveTask2Component,
     DynamicSurveyComponent,
-    SampleSurveyComponent
+    SampleSurveyComponent,
+    AyaSurveyComponent,
+    CaregiverSurveyComponent
+
   ]
 })
 export class SurveyModule { }

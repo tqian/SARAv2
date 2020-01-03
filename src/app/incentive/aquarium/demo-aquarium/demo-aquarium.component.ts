@@ -30,6 +30,14 @@ export class DemoAquariumComponent implements OnInit {
     return this.userProfileService.isActive;
   }
 
+  get surveyPath(){
+    if (this.userProfileService.isParent){
+      return "/survey/caregiversurvey"
+    } else{
+      return "/survey/ayasurvey"
+    }
+  }
+
   constructor(private router: Router, 
     //private pickGameService: PickGameService,
     private route: ActivatedRoute,

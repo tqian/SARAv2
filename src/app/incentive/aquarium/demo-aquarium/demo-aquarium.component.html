@@ -5,7 +5,7 @@
     </ion-buttons-->
     <ion-buttons slot="end">
         <ion-text  *ngIf="!isActive"><strong>Account is Paused</strong> </ion-text>
-        <ion-button href="/survey/samplesurvey" *ngIf="isActive">Start Survey</ion-button> 
+        <ion-button href="{{surveyPath}}" *ngIf="isActive">Start Survey</ion-button> 
     </ion-buttons>
     <ion-title>ADAPTS</ion-title>
   </ion-toolbar>
