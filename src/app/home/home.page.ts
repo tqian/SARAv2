@@ -37,12 +37,17 @@ export class HomePage  implements OnInit, OnDestroy {
     //   }
     // );
 
-    this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser => {
+    this.userSub=  this.authService.loggedInUser.subscribe(loggedInUser =>  {
       this.isAuthenticated = this.authService.isLoggedIn();
       if(this.isAuthenticated){
         this.userSub = this.userProfileService.initializeObs().subscribe( 
-          () => {
-            this.showComponent=true
+          async () => {
+            console.log("in subscribe in home.page.ts\n current UserProfile:");
+            console.log(JSON.stringify(this.userProfileService.userProfile));
+
+            this.showComponent=true;
+            await new Promise(r => setTimeout(r, 500));
+
           }
         );
       }

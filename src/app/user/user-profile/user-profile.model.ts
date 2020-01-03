@@ -18,7 +18,7 @@ export class UserProfile {
         'weekly_survey':{}
     };
     public username: string;
-    public isParent: boolean;
+    public isParent?: boolean;
     public isActive: boolean;
     public datesTaken: string[];
     public points: number;
@@ -46,4 +46,5 @@ export class UserProfile {
     
 export class UserProfileFixed {
     public isActive?: boolean;                     
+    public isParent?: boolean;
 }
