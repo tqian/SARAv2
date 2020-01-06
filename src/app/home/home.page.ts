@@ -46,7 +46,7 @@ export class HomePage  implements OnInit, OnDestroy {
             console.log(JSON.stringify(this.userProfileService.userProfile));
 
             this.showComponent=true;
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 1000));
 
           }
         );
