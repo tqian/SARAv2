@@ -11,6 +11,7 @@ import { Level1Small } from '../fishgame/Level1Small';
 import { ActivatedRoute, Router } from '@angular/router';
 //import { PreLoad } from '../../../PreLoad';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { DatabaseService } from 'src/app/monitor/database.service';
 
 declare let Phaser: any;
 
@@ -27,10 +28,13 @@ export class DemoAquariumComponent implements OnInit {
   pickedGame ;
   totalPoints = 0;
 
-  constructor(private router: Router, 
+  constructor(
+    private db: DatabaseService,
+    private router: Router, 
     //private pickGameService: PickGameService,
     private ga: GoogleAnalytics,
-    private route: ActivatedRoute) { 
+    private route: ActivatedRoute
+  ) { 
     console.log("Constructor called");
     
  /*    this.route.queryParams.subscribe(params => {
@@ -70,17 +74,14 @@ export class DemoAquariumComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this.ga.trackView('Aquarium')
-    .then(() => {console.log("trackView at Aquarium!")})
-    .catch(e => console.log(e));
-    
+      
     console.log(window.localStorage['TotalPoints']);
     //this.totalPoints = parseInt(window.localStorage['TotalPoints'] || "0");
      if(window.localStorage['TotalPoints'] == undefined)
         this.totalPoints = 0;
     else
         this.totalPoints = parseInt(window.localStorage['TotalPoints']);
+
     console.log("Inside Aquarium totalPoints: "+this.totalPoints);
  
     this.game =  new Phaser.Game(
@@ -121,6 +122,9 @@ export class DemoAquariumComponent implements OnInit {
       preLoader.setGameName(this.pickedGame = "GameOver");
       this.game.state.add('Preloader', preLoader);
     }
+    console.log("set State!");
+ 
+     
     this.game.state.add('GameOver', GameOver);
     this.game.state.start('Boot');
     //self = this;
@@ -129,6 +133,27 @@ export class DemoAquariumComponent implements OnInit {
 
     //this.pickGameService.currentGame.subscribe(game => this.pickedGame = game)
   }
+
+  ngAfterViewInit(){
+    this.ga.trackView('Aquarium')
+    .then(() => {console.log("trackView at Aquarium!")})
+    .catch(e => console.log(e));
+
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {
+        this.db.getTracks().subscribe(tracks => {
+          console.log("ngAfterViewInit db.getTracks: "+tracks);
+        })
+       }
+    });
+    
+    console.log('Inside Aquarium, before addTrack');   
+    this.db.getDatabaseState().subscribe(rdy => {
+        if (rdy) {     
+          this.db.addTrack("Aquarium", "Enter", 1); 
+        }
+    });        
+  }  
  
   ionViewDidLeave(){
     this.game.destroy();
@@ -139,7 +164,6 @@ export class DemoAquariumComponent implements OnInit {
     this.ga.trackEvent('Start survey Button', 'Tapped Action', 'Loading survey', 0)
     .then(() => {console.log("trackEvent for Start survey Button!")})
     .catch(e => alert("trackEvent for Start survey Button=="+e));
-;
   
   }
 
