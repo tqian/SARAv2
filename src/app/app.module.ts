@@ -20,6 +20,8 @@ import { LifeInsightsModule } from './incentive/life-insights/life-insights.modu
 
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 import { Network } from '@ionic-native/network/ngx';
+import { SQLitePorter } from '@ionic-native/sqlite-porter/ngx';
+import { SQLite } from '@ionic-native/sqlite/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -41,6 +43,8 @@ import { Network } from '@ionic-native/network/ngx';
     OneSignal,
     GoogleAnalytics,
     Network, 
+    SQLite,
+    SQLitePorter,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
