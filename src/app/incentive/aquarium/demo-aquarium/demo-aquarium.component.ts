@@ -12,6 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 //import { PreLoad } from '../../../PreLoad';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 import { DatabaseService } from 'src/app/monitor/database.service';
+import * as moment from 'moment';
+import { AlertController } from '@ionic/angular';
 
 declare let Phaser: any;
 
@@ -30,6 +32,7 @@ export class DemoAquariumComponent implements OnInit {
 
   constructor(
     private db: DatabaseService,
+    private alertCtrl: AlertController,
     private router: Router, 
     //private pickGameService: PickGameService,
     private ga: GoogleAnalytics,
@@ -45,6 +48,16 @@ export class DemoAquariumComponent implements OnInit {
     }); */
   }
 
+  async presentAlert() {
+    const alert = await this.alertCtrl.create({
+      header: 'Alert',
+      subHeader: "Start Survey is not avaibable!",
+      message: 'Please start survey after 6pm.',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+  }
 
   goToRewardsPage(){
     console.log("rewards page");
@@ -160,11 +173,19 @@ export class DemoAquariumComponent implements OnInit {
   }
 
   startSurvey(){
-    this.router.navigate(['survey/samplesurvey']);
-    this.ga.trackEvent('Start survey Button', 'Tapped Action', 'Loading survey', 0)
-    .then(() => {console.log("trackEvent for Start survey Button!")})
-    .catch(e => alert("trackEvent for Start survey Button=="+e));
-  
+
+    var currentTime = moment(); 
+    var startTime = moment({hour: 18});  // 6pm
+    var endTime = moment({hour: 23, minute: 59});  // 11:59pm
+    if(currentTime.isBetween(startTime, endTime)) {
+      this.router.navigate(['survey/samplesurvey']);
+      this.ga.trackEvent('Start survey Button', 'Tapped Action', 'Loading survey', 0)
+      .then(() => {console.log("trackEvent for Start survey Button!")})
+      .catch(e => alert("trackEvent for Start survey Button=="+e));
+    } else {
+      this.presentAlert();
+    }
+    
   }
 
 }

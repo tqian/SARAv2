@@ -99,7 +99,7 @@
       "text":"How motivated are you to take 6MP today?",
       "type":"radiobutton",
       "extra":{
-        "choices": ["No<br>Nausea", "Extremely<br>Motivated"],
+        "choices": ["Not<br>Motivated", "Extremely<br>Motivated"],
         "orientation": "horizontal",
         "levels": 5
       }
