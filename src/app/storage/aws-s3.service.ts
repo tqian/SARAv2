@@ -25,8 +25,8 @@ export class AwsS3Service extends StoreBaseService {
     var bucketName =  environment.awsConfig.bucketName;
     var bucketRegion = environment.awsConfig.bucketRegion;
     var IdentityPoolId = environment.awsConfig.IdentityPoolId;
-    var accessKeyId = environment.awsConfig.accessKeyId;
-    var secretAccessKey = environment.awsConfig.secretAccessKey;
+    //var accessKeyId = environment.awsConfig.accessKeyId;
+    //var secretAccessKey = environment.awsConfig.secretAccessKey;
     
     AWS.config.update({
       region: bucketRegion,
@@ -49,8 +49,8 @@ export class AwsS3Service extends StoreBaseService {
     s3.upload({
       Bucket: bucketName,
       Key: fileName, //this.currentFile.name,
-      Body: this.currentFile,
-      ACL: 'public-read'
+      Body: this.currentFile
+     // ACL: 'public-read'
     }, function(err, data) {
       if (err) {
         //alert('There was an error uploading your photo: '+err.message);

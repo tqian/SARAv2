@@ -11,6 +11,7 @@ import * as moment from 'moment';
 import * as lifeInsightProfile from "../../../assets/data/life_insight.json";
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 import { AwardDollarService } from '../award-dollar.service';
+import { DatabaseService } from 'src/app/monitor/database.service';
 
 @Component({
   selector: 'app-dynamic-survey',
@@ -75,7 +76,9 @@ export class DynamicSurveyComponent implements OnInit {
     private awardDollarService: AwardDollarService,
     private router: Router,
     private ga: GoogleAnalytics,
-    public plt: Platform) {
+    public plt: Platform,
+    private db: DatabaseService
+    ) {
   }
 
   ngOnInit() { }
@@ -86,7 +89,14 @@ export class DynamicSurveyComponent implements OnInit {
         this.survey_data = await res.json();
         this.init();
       });
-  }
+
+      console.log('Inside Survey, before addTrack');
+      this.db.getDatabaseState().subscribe(rdy => {
+        if (rdy) {     
+          this.db.addTrack("SurveyPage", "Enter", 1);
+        }
+      });     
+    }     
 
   //
   init() {  
@@ -117,11 +127,14 @@ export class DynamicSurveyComponent implements OnInit {
     //const template2 = '<ion-card><ion-card-content>Nine Inch Nails Live</ion-card-content></ion-card>';
 
     //go through the questions
+    this.survey = {};
     for (var i = 0; i < this.survey_data.length; i++) {
       var obj = this.survey_data[i];
-      console.log("Done " + obj.text);
+      console.log("Done " + obj.text+" obj.name "+obj.name);
+      this.survey[obj.name] = "";
       this.survey_string = this.process_survey(obj, this.survey_string, obj.name);
     }
+
     this.survey_string = this.survey_string + '<div class="ion-padding"><button class="buttonold button-positive" (click)="storeData()">Submit</button></div>';
 
 
@@ -143,6 +156,7 @@ export class DynamicSurveyComponent implements OnInit {
         //self2=this;
         this.survey2['starttimeUTC'] = new Date().getTime();
       }
+      
       ngOnInit() {}
 
       ngAfterViewInit() {
@@ -369,6 +383,7 @@ export class DynamicSurveyComponent implements OnInit {
         const f = factories.componentFactories[0];
         const cmpRef = this.vc.createComponent(f);
         cmpRef.instance.awsS3Service = this.awsS3Service;
+        cmpRef.instance.survey2 = this.survey;
         cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
         cmpRef.instance.awardDollarService = this.awardDollarService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
