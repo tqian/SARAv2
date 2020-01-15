@@ -4,6 +4,7 @@ import * as moment from 'moment';
 
 import * as lifeInsightProfile from "../../../../assets/data/life_insight.json";
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { DatabaseService } from 'src/app/monitor/database.service.js';
 
 
 @Component({
@@ -36,7 +37,9 @@ export class SelectLifeInsightsComponent implements OnInit {
 
   private lineChart: Chart;
 
-  constructor(private ga: GoogleAnalytics) {          
+  constructor(
+    private ga: GoogleAnalytics,
+    private db: DatabaseService) {          
   }
 
   ngOnInit(){
@@ -47,6 +50,23 @@ export class SelectLifeInsightsComponent implements OnInit {
 
     this.init(this.index);
 
+  }
+
+  ngAfterViewInit() {
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Life-insights Page", "Enter", 1);
+      }
+    });     
+  }     
+
+
+  ionViewDidLeave(){
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Life-insights Page", "Leave", 1); 
+      }
+    });   
   }
 
   init(index: number){

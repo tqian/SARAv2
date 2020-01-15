@@ -86,6 +86,7 @@ export class DatabaseService {
         console.log('Track added!');
         this.displayTracks();
       }).catch(e => console.log("In addTrack:"+e));
+      
     }   
     
     displayTracks() {
@@ -111,6 +112,15 @@ export class DatabaseService {
         }
         //this.tracks.next(currentTracks);  announce new value to all subscribers
       }).catch(e => console.log("In displayTracks:"+e));
+    }
+    
+    exportDBToJson(){ 
+      this.sqlitePorter.exportDbToJson(this.database)
+      .then(res => {
+        console.log('Exported '+res.json);
+      })
+      .catch(e => console.error(e));
+
     }
 
 }

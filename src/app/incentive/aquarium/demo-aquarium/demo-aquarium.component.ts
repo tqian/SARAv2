@@ -170,6 +170,11 @@ export class DemoAquariumComponent implements OnInit {
  
   ionViewDidLeave(){
     this.game.destroy();
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Aquarium", "Leave", 1); 
+      }
+    });   
   }
 
   startSurvey(){

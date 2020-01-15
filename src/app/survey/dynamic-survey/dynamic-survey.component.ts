@@ -96,8 +96,16 @@ export class DynamicSurveyComponent implements OnInit {
           this.db.addTrack("SurveyPage", "Enter", 1);
         }
       });     
-    }     
+  }     
 
+  ionViewDidLeave(){
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Survey", "Leave", 1); 
+      }
+    });   
+  }
+  
   //
   init() {  
 

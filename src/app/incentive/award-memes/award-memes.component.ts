@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
+import { DatabaseService } from 'src/app/monitor/database.service';
 
 @Component({
   selector: 'app-award-memes',
@@ -11,7 +12,9 @@ export class AwardMemesComponent implements OnInit {
 
   whichImage: string;
   //src="{{whichImage}}"
-  constructor(private ga: GoogleAnalytics) { }
+  constructor(
+    private ga: GoogleAnalytics,
+    private db: DatabaseService) { }
 
   ngOnInit() {
     this.ga.trackView('Life-insight')
@@ -20,6 +23,23 @@ export class AwardMemesComponent implements OnInit {
 
     var randomInt = Math.floor(Math.random() * 5) + 1;
     this.whichImage = "./assets/memes/"+randomInt+".jpg";
+  }
+
+  ngAfterViewInit() {
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Award-Memes Page", "Enter", 1);
+      }
+    });     
+ }     
+
+
+  ionViewDidLeave(){
+    this.db.getDatabaseState().subscribe(rdy => {
+      if (rdy) {     
+        this.db.addTrack("Award-Memes Page", "Leave", 1); 
+      }
+    });   
   }
 
 }
