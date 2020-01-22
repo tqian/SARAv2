@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
 import { AlertController } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 import * as moment from 'moment';
 
@@ -21,7 +22,8 @@ export class OneSignalService {
       //link for one signal tutorial ==========> https://devdactic.com/push-notifications-ionic-onesignal/
       
       //this.oneSignal.startInit('YOUR ONESIGNAL APP ID', 'YOUR ANDROID ID');
-      this.oneSignal.startInit('f9c4370d-cbcb-4e6f-ab1f-25d1c41b8f3a', '851185487102');
+      // this.oneSignal.startInit('f9c4370d-cbcb-4e6f-ab1f-25d1c41b8f3a', '851185487102');
+      this.oneSignal.startInit(environment.oneSignalAppId, environment.firebaseConfig.messagingSenderId);
 
       this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.None);
       //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
