@@ -135,10 +135,10 @@ export class DemoAquariumComponent implements OnInit {
   create(){
     console.log(window.localStorage['TotalPoints']);
     //this.totalPoints = parseInt(window.localStorage['TotalPoints'] || "0");
-    if(window.localStorage['TotalPoints'] == undefined)
-        this.totalPoints = 0;
-    else
-        this.totalPoints = parseInt(window.localStorage['TotalPoints']);
+    // if(window.localStorage['TotalPoints'] == undefined)
+    //     this.totalPoints = 0;
+    // else
+    //     this.totalPoints = parseInt(window.localStorage['TotalPoints']);
     console.log("Inside Aquarium totalPoints: "+this.totalPoints);
 
     console.log("create called");
