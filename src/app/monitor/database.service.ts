@@ -43,7 +43,7 @@ export class DatabaseService {
           location: 'default'
         }).then((db: SQLiteObject) => {
             this.database = db;
-            //this.deleteTable();
+            //this.dropTable();
             //console.log("table deleted!");
             this.createDatabase();
         }); 
@@ -73,20 +73,35 @@ export class DatabaseService {
       return this.tracks.asObservable();
     }    
 
-    deleteTable(){
-      return this.database.executeSql('DROP TABLE tracks').then(data => {
+    dropTable(){
+      return this.database.executeSql('DROP TABLE IF EXISTS tracks').then(data => {
         console.log('Table deleted!');
-      }).catch(e => console.log("deleteTable:"+e));
+      }).catch(e => {
+        console.log("dropTable:"+JSON.stringify(e));
+        this.isTableNotEmpty();
+      });      
     }
-
+    
+    isTableNotEmpty() : Promise<any> {
+      console.log("Inside isTableEmpty:");
+      //return this.database.executeSql('SELECT * FROM tracks', []).then(data => {
+      return this.database.executeSql("SELECT * FROM sqlite_master WHERE name ='tracks' and type='table'", []).then(data => {
+        var rowlength = data.rows.length;
+        console.log("isTableEmpty rowlength= "+rowlength);
+        return rowlength != 0;
+      }).catch(e => {
+        console.log("In isTableNotEmpty:"+JSON.stringify(e));
+      });
+    }
+      
     addTrack(pageName, eventStatus, userID) {
       var currentTime = moment().format('MMMM Do YYYY, h:mm:ss a Z');
       let data = [pageName, currentTime, eventStatus, userID];
       return this.database.executeSql('INSERT INTO tracks (pageName, eventTime, eventStatus, userID) VALUES (?, ?, ?, ?)', data).then(data => {
-        console.log('Track added!');
-        this.displayTracks();
-      }).catch(e => console.log("In addTrack:"+e));
-      
+        console.log(pageName+' Track added!');
+        //this.displayTracks();
+      }).catch(e => console.log("In addTrack:"+pageName+" "+JSON.stringify(e)));
+
     }   
     
     displayTracks() {
@@ -114,12 +129,11 @@ export class DatabaseService {
       }).catch(e => console.log("In displayTracks:"+e));
     }
     
-    exportDBToJson(){ 
-      this.sqlitePorter.exportDbToJson(this.database)
-      .then(res => {
-        console.log('Exported '+res.json);
-      })
-      .catch(e => console.error(e));
+    exportDatabaseToJson() : Promise<any> { 
+      return this.sqlitePorter.exportDbToJson(this.database).then(res => {
+        console.log('Exported '+JSON.stringify(res));
+        return res;
+      }).catch(e => console.error(e));
 
     }
 

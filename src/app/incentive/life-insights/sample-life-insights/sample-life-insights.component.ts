@@ -17,7 +17,7 @@ import { DatabaseService } from 'src/app/monitor/database.service.js';
 //@PreLoad('q1lifeinsight')
 export class SampleLifeInsightsComponent implements OnInit {
 
-  @ViewChild('lineCanvas') lineCanvas: ElementRef<HTMLDivElement>;
+  @ViewChild('lineCanvas', {static: true}) lineCanvas: ElementRef<HTMLDivElement>;
   //@Input() jsonObj : any;
   //private _jsonObj: any;
 
@@ -104,9 +104,10 @@ export class SampleLifeInsightsComponent implements OnInit {
     if(window.localStorage.getItem("lifeInsight") == undefined) {
       console.log("Undefined!");
        this.data = [0, 1, 3, 4, null, 3, 1];
+       this.labels = ["1/15", "1/16", "1/17", "1/18", "1/19", "1/20", "Today"];
       //this.inputString = JSON.stringify(this.inputJson);
      }
-    else {
+     else {
       var lifeInsightObj= JSON.parse(window.localStorage.getItem("lifeInsight"));
       this.data = [];
       this.labels = [];

@@ -65,7 +65,7 @@ export class DynamicSurveyComponent implements OnInit {
   survey = {};
   survey_data: any;
 
-  @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
+  @ViewChild('vc', { read: ViewContainerRef, static: false}) vc: ViewContainerRef;
 
   constructor(private _compiler: Compiler,
     private _injector: Injector,
@@ -316,32 +316,38 @@ export class DynamicSurveyComponent implements OnInit {
               this.lifeInsightObj[question]['data'] = [null];
             }
           }
-
-          // this.lifeInsightObj['Q4d'] = {};
-          // this.lifeInsightObj['Q4d']['dates'] = [moment().format("DD-MM-YYYY")];
-          // if(this.survey2.hasOwnProperty('Q4d')) {
-          //   this.lifeInsightObj['Q4d']['data'] = [parseInt(this.survey2['Q4d'])];
-          // }
-          // else {
-          //   this.lifeInsightObj['Q4d']['data'] = [null];
-          // }
          
         }
         else {
            this.lifeInsightObj= JSON.parse(window.localStorage["lifeInsight"]);
 
            for (let question of questionsArray) {   
-              if(this.lifeInsightObj[question]['dates'].length == 7) {
+              var dateslength = this.lifeInsightObj[question]['dates'].length;
+              if(dateslength == 7) {
                 this.lifeInsightObj[question]['dates'].shift();
                 this.lifeInsightObj[question]['data'].shift();
               }      
-              this.lifeInsightObj[question]['dates'].push(moment().format("DD-MM-YYYY"));
-              if(this.survey2.hasOwnProperty(question)) {
-                this.lifeInsightObj[question]['data'].push(parseInt(this.survey2[question]));
-              }
-              else {
-                this.lifeInsightObj[question]['data'].push(null);
-              }
+              var currentdate = moment().format("DD-MM-YYYY");
+              var dates = this.lifeInsightObj[question]["dates"];
+              var dateIndex = dates.indexOf(currentdate);
+              console.log("Current date exist? "+dateIndex);
+              if( dateIndex > -1 ) {
+                this.lifeInsightObj[question]['dates'][dateIndex] =currentdate;
+                if(this.survey2.hasOwnProperty(question)) {
+                  this.lifeInsightObj[question]['data'][dateIndex]=(parseInt(this.survey2[question]));
+                }
+                else {
+                  this.lifeInsightObj[question][dateIndex]=null;
+                }
+              } else {
+                this.lifeInsightObj[question]['dates'].push(currentdate);
+                if(this.survey2.hasOwnProperty(question)) {
+                  this.lifeInsightObj[question]['data'].push(parseInt(this.survey2[question]));
+                }
+                else {
+                  this.lifeInsightObj[question]['data'].push(null);
+                }
+               } 
             }
 
             // this.lifeInsightObj['Q4d']['dates'].push(moment().format("DD-MM-YYYY"));
@@ -364,7 +370,7 @@ export class DynamicSurveyComponent implements OnInit {
         
         //save to Amazon AWS S3
         console.log("save to Amazon AWS S3")
-        this.awsS3Service.uploadSurveyResult(this.survey2);
+        this.awsS3Service.uploadSurveyResult("Survey",this.survey2);
         //console.log("End of storeData");
         
         if(Math.random() > 0.5 ){

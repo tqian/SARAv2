@@ -14,7 +14,7 @@ import { DatabaseService } from 'src/app/monitor/database.service.js';
 })
 export class SelectLifeInsightsComponent implements OnInit {
 
-  @ViewChild('lineCanvas') lineCanvas: ElementRef<HTMLDivElement>;
+  @ViewChild('lineCanvas', {static: true}) lineCanvas: ElementRef<HTMLDivElement>;
   
   imgloc;
   title;

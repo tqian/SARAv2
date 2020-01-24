@@ -21,7 +21,7 @@ export class AwsS3Service extends StoreBaseService {
     super(encrDecr, networkSvc);
   }
 
-  upload(result){
+  upload(folder, result){
     var bucketName =  environment.awsConfig.bucketName;
     var bucketRegion = environment.awsConfig.bucketRegion;
     var IdentityPoolId = environment.awsConfig.IdentityPoolId;
@@ -42,31 +42,31 @@ export class AwsS3Service extends StoreBaseService {
       //secretAccessKey: secretAccessKey
     });  
 
-    var fileName = "result"+result['endtimeUTC']+".json";
+    var fileName = "result"+new Date().getTime()+".json";
     this.currentFile = new File([JSON.stringify(result)], fileName, {type: "text/plain"});
-    console.log("result"+result['endtimeUTC']+".json"+" key: "+fileName);
+    console.log("result"+new Date().getTime()+".json"+" key: "+fileName);
 
     s3.upload({
       Bucket: bucketName,
-      Key: fileName, //this.currentFile.name,
+      Key: folder+"/"+fileName, //fileName, //this.currentFile.name,
       Body: this.currentFile
      // ACL: 'public-read'
     }, function(err, data) {
       if (err) {
         //alert('There was an error uploading your photo: '+err.message);
         console.log('There was an error uploading your file: '+err.message);
-        this.storeResultLocally(result);
+        //this.storeResultLocally(result);
       }
       console.log('Successfully uploaded survey to s3.');
     });  
   }
 
-  uploadSurveyResult(result) {
+  uploadSurveyResult(folder, result) {
     if(this.networkSvc.getCurrentNetworkStatus() == ConnectionStatus.Online){
         //upload Local Data first
-        this.uploadLocalData();
+        this.uploadLocalData(folder);
         //upload current survey Data
-        this.upload(result);   
+        this.upload(folder, result);   
     } else {
         this.storeResultLocally(result);
     }
@@ -74,13 +74,13 @@ export class AwsS3Service extends StoreBaseService {
   }    
   
   //upload local data
-  uploadLocalData() {
+  uploadLocalData(folder) {
     var storedObj = this.getLocalData();
     if(storedObj != null) {
       this.clearLocalData();
       var surveyArray = storedObj['storedSurvey'];
       for (let op of surveyArray) {
-        this.upload(op);        //upload data from local storage, already sved, not need to save again
+        this.upload(folder,op);        //upload data from local storage, already sved, not need to save again
       }
     }
       
