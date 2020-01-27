@@ -78,11 +78,11 @@ export class DatabaseService {
         console.log('Table deleted!');
       }).catch(e => {
         console.log("dropTable:"+JSON.stringify(e));
-        this.isTableNotEmpty();
+        //this.isTableExist();
       });      
     }
     
-    isTableNotEmpty() : Promise<any> {
+    isTableExist() : Promise<any> {
       console.log("Inside isTableEmpty:");
       //return this.database.executeSql('SELECT * FROM tracks', []).then(data => {
       return this.database.executeSql("SELECT * FROM sqlite_master WHERE name ='tracks' and type='table'", []).then(data => {
@@ -90,9 +90,21 @@ export class DatabaseService {
         console.log("isTableEmpty rowlength= "+rowlength);
         return rowlength != 0;
       }).catch(e => {
-        console.log("In isTableNotEmpty:"+JSON.stringify(e));
+        console.log("At isTableNotEmpty:"+JSON.stringify(e));
       });
     }
+
+    isTableEmpty() : Promise<any> {
+      console.log("Inside isTableEmpty:");
+      return this.database.executeSql('SELECT * FROM tracks', []).then(data => {
+         var rowlength = data.rows.length;
+        console.log("isTableEmpty rowlength= "+rowlength);
+        return rowlength == 0;
+      }).catch(e => {
+        console.log("At isTableNotEmpty:"+JSON.stringify(e));
+      });
+    }
+
       
     addTrack(pageName, eventStatus, userID) {
       var currentTime = moment().format('MMMM Do YYYY, h:mm:ss a Z');

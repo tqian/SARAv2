@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 //import { PreLoad } from '../PreLoad';
 import { DatabaseService } from 'src/app/monitor/database.service';
 import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
@@ -11,7 +11,8 @@ import { AwsS3Service } from '../storage/aws-s3.service';
 })
 
 //@PreLoad('aquarium')
-export class HomePage {
+export class HomePage implements OnDestroy{
+  
   constructor(
     private ga: GoogleAnalytics,
     private db: DatabaseService,
@@ -28,14 +29,15 @@ export class HomePage {
     console.log('Inside Home, ngAfterViewInit');   
     this.db.getDatabaseState().subscribe(rdy => {
         if (rdy) {     
-          this.db.isTableNotEmpty().then(tableExist => {
-            if(tableExist) {
+          this.db.isTableEmpty().then(tableEmpty => {
+            console.log("tableEmpty: "+tableEmpty);
+            if(!tableEmpty) {
               this.exportDeleteDatabase();
             } else {
               this.db.addTrack("Home", "Enter", 1); 
             }
           }).catch(e => {
-            console.log("In ngAfterViewInit at Home:"+e);
+            console.log("In ngOnDestroy at Home:"+e);
           });
         }
     });      
@@ -50,6 +52,19 @@ export class HomePage {
       }
     });   
   }
+
+  ngOnDestroy() {
+/*     this.db.isTableEmpty().then(tableEmpty => {
+        console.log("tableEmpty: "+tableEmpty);
+        if(!tableEmpty) {
+          this.exportDeleteDatabase();
+        }
+      }).catch(e => {
+        console.log("In ngOnDestroy at Home:"+e);
+      });
+ */
+  }
+
 
   exportDeleteDatabase(){
     console.log("exportTable!");
