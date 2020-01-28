@@ -162,10 +162,11 @@ export class DynamicSurveyComponent implements OnInit {
 
       constructor() {
         //self2=this;
-        this.survey2['starttimeUTC'] = new Date().getTime();
       }
       
-      ngOnInit() {}
+      ngOnInit() {
+        this.survey2['starttimeUTC'] = new Date().getTime();
+      }
 
       ngAfterViewInit() {
         setTimeout(e => this.drawMoodGrid(this), 200);
