@@ -64,11 +64,11 @@ export class DemoAquariumComponent implements OnInit {
 
   game;
   pickedGame;
-  //totalPoints = 0;
   isLoaded = false;
   public isShowingRouteLoadIndicator: boolean;
   survey_text; 
   //username;
+  //totalPoints = 0;
 
   
   // totalPoints = 0;
@@ -84,9 +84,9 @@ export class DemoAquariumComponent implements OnInit {
 
   get surveyPath(){
     if (this.userProfileService.isParent){
-      return "survey/samplesurvey" //"/survey/caregiversurvey"
+      return "survey/samplesurvey"; //"/survey/caregiversurvey"
     } else{
-      return "survey/samplesurvey2" //"/survey/ayasurvey"
+      return "survey/samplesurvey2"; //"/survey/ayasurvey"
     }
   }
 
