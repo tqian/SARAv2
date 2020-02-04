@@ -8,7 +8,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
-import { File } from '@ionic-native/file/ngx';
+//import { File } from '@ionic-native/file/ngx';
 import { Injector } from '@angular/core';
 
 import { AppComponent } from './app.component';
@@ -25,6 +25,10 @@ import { FormsModule } from '@angular/forms';
 import { CheatpageComponent } from './incentive/aquarium/cheatpage/cheatpage.component';
 import { UserModule } from './user/user.module';
 import { HomePageModule } from './home/home.module';
+
+import { SQLitePorter } from '@ionic-native/sqlite-porter/ngx';
+import { SQLite } from '@ionic-native/sqlite/ngx';
+
 
 @NgModule({
   declarations: [AppComponent,LoadingSpinnerComponent,CheatpageComponent],
@@ -47,9 +51,11 @@ import { HomePageModule } from './home/home.module';
   providers: [
     StatusBar,
     SplashScreen,
-    File,
+    //File,
     OneSignal,
     GoogleAnalytics,
+    SQLite,
+    SQLitePorter,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
   ],
   bootstrap: [AppComponent]

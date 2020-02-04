@@ -17,11 +17,10 @@ export const environment = {
   },
 
   awsConfig: {
-    bucketName: 'sara-testv',
-    bucketRegion:'us-east-2',
-    IdentityPoolId: 'us-east-2:c9617754-1d3e-4058-bfa4-d54230cb72cf',
-    accessKeyId: 'AKIA5U5F73RGDIYD6DUQ',
-    secretAccessKey: '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'
+    // CHOP
+    bucketName: 'chop-sara', 
+    bucketRegion: 'us-east-1', 
+    IdentityPoolId: 'us-east-1:667b1ad5-ccdc-4d90-b94f-300732b55448'
   },
 
   googleAnalytic: {

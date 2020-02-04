@@ -16,7 +16,7 @@ import { GoogleAnalytics } from '@ionic-native/google-analytics/ngx';
 //@PreLoad('q1lifeinsight')
 export class SampleLifeInsightsComponent implements OnInit {
 
-  @ViewChild('lineCanvas') lineCanvas: ElementRef<HTMLDivElement>;
+  @ViewChild('lineCanvas', {static: true}) lineCanvas: ElementRef<HTMLDivElement>;
   //@Input() jsonObj : any;
   //private _jsonObj: any;
 

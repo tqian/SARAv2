@@ -68,7 +68,7 @@ export class DynamicSurveyComponent implements OnInit {
   survey = {};
   survey_data: any;
 
-  @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
+  @ViewChild('vc', { read: ViewContainerRef, static: false}) vc: ViewContainerRef;
 
   //private vc: ViewContainerRef;
 
@@ -124,9 +124,11 @@ export class DynamicSurveyComponent implements OnInit {
     //const template2 = '<ion-card><ion-card-content>Nine Inch Nails Live</ion-card-content></ion-card>';
 
     //go through the questions
+    this.survey = {};
     for (var i = 0; i < this.survey_data.length; i++) {
       var obj = this.survey_data[i];
       //console.log("Done " + obj.text);
+      this.survey[obj.name] = "";
       this.survey_string = this.process_survey(obj, this.survey_string, obj.name);
     }
     this.survey_string = this.survey_string + '<div class="ion-padding"><button class="buttonold button-positive" (click)="storeData()">Submit</button></div>';
@@ -135,6 +137,7 @@ export class DynamicSurveyComponent implements OnInit {
     const tmpCmp = Component({ template: this.survey_string })(class implements OnInit{
       
       survey2 = {};
+      fileLink;
       lifeInsightObj = {};
       //storeToFirebaseService: StoreToFirebaseService;
       ga: GoogleAnalytics;
@@ -147,9 +150,10 @@ export class DynamicSurveyComponent implements OnInit {
 
       constructor() {
         //self2=this;
+      }
+      ngOnInit() {
         this.survey2['starttimeUTC'] = new Date().getTime();
       }
-      ngOnInit() {}
 
       ngAfterViewInit() {
         setTimeout(e => this.drawMoodGrid(this), 200);
@@ -228,6 +232,7 @@ export class DynamicSurveyComponent implements OnInit {
         // do something with new value
         console.log('holla' + newObj);
       }
+
       inputchanged(questions) {
         //console.log('holla: ' + questions);
         console.log(JSON.stringify(this.survey2));
@@ -366,7 +371,7 @@ export class DynamicSurveyComponent implements OnInit {
         //console.log(this.survey2);
         
         //save to Amazon AWS S3
-        this.awsS3Service.upload(this.survey2);
+        this.awsS3Service.upload(this.fileLink,this.survey2);
         //console.log("End of storeData");
        
         /*
@@ -409,6 +414,8 @@ export class DynamicSurveyComponent implements OnInit {
         const f = factories.componentFactories[0];
         const cmpRef = this.vc.createComponent(f);
         cmpRef.instance.awsS3Service = this.awsS3Service;
+        cmpRef.instance.survey2 = this.survey;
+        cmpRef.instance.fileLink = this.fileLink;        
         //cmpRef.instance.storeToFirebaseService = this.storeToFirebaseService;
         cmpRef.instance.userProfileService = this.userProfileService;
         cmpRef.instance.EncrDecr = this.EncrDecr;
