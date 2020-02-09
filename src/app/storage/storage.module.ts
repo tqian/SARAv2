@@ -12,7 +12,7 @@ import { AwsS3Service } from './aws-s3.service';
   declarations: [],
   imports: [
     CommonModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireModule.initializeApp(environment.firebaseConfig),    //load firebase environment configuration
     AngularFirestoreModule
   ],
   providers: [ StoreToFirebaseService, EncrDecrService, AwsS3Service ]
